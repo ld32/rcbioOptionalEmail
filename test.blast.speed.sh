@@ -16,3 +16,6 @@ module load seq/blast/ncbi-blast/2.2.26
 (date && blastp -db nr -query in.fa -num_threads 4 -out out.txt && date) > run1.txt & 
 
 (date && blast_wrapper.sh blastp -db nr -query in.fa -num_threads 4 -out out1.txt && date) > run2.txt &
+
+
+#add a line
