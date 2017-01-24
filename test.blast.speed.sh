@@ -20,3 +20,4 @@ module load seq/blast/ncbi-blast/2.2.26
  # local add a line
 #add a line
 # add another line
+# add a line from remote master
