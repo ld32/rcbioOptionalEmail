@@ -1,1 +1,1 @@
-# Some scripts to help using better to run cluster jobs.
+# Some scripts to help user to run cluster jobs easier.
