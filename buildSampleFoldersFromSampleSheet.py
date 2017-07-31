@@ -4,7 +4,9 @@ import xlrd, sys
 import os.path
 
 if len(sys.argv) != 2:
-        print "Usage: prepareFolders.py <sampleList.xlsx, required. Check online for format>"
+        print "Usage: " + os.path.basename(__file__) + "  <sampleList.xlsx, required.>"
+        print "For example, please check online for Excel table format:"
+        print "https://wiki.rc.hms.harvard.edu/display/O2/Build+Folder+Structures+From+Sample+Sheet+for+Rcbio+NGS+Workflows"
         exit()
 
 sampleSheet=sys.argv[1]
@@ -81,6 +83,11 @@ for i in xrange(sh.nrows):
                                 os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq.gz" )
                         except OSError, e:
                                 pass
+                elif read1.endswith(".bz2"):
+                        try:
+                                os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq.bz2" )
+                        except OSError, e:
+                                pass
                 else:
                         try:
                                 os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq" )
@@ -88,6 +95,7 @@ for i in xrange(sh.nrows):
                                 pass
         else: 
                 print "row " + str(i) + ": read1 file not exist: " + read1 
+                exit()
         if sh.cell(i,5).value != "":  # if we have read2
                 read2 = os.path.expanduser(path + "/" + sh.cell(i,5).value)
                 if ' ' in read2: 
@@ -100,6 +108,12 @@ for i in xrange(sh.nrows):
                                         os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq.gz" )
                                 except OSError, e:
                                         pass
+                        elif read2.endswith(".bz2"):
+                                try:
+                                    os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq.bz2" )
+                                except OSError, e:
+                                    pass
+                                
                         else:
                                 try:
                                         os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq" )
@@ -107,7 +121,7 @@ for i in xrange(sh.nrows):
                                         pass
                 else: 
                         print "row " + str(i) + ": read2 file not exist: " + read2 
-
+                        exit()
                         
 if not os.path.exists("group2"):
     print "Something is wrong. Please make sure you have at least two groups."
