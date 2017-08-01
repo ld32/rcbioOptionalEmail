@@ -79,20 +79,11 @@ for i in xrange(sh.nrows):
                 if not os.path.exists("group" + group + "/" + sample + "/" ): 
                         os.makedirs("group" + group + "/" + sample + "/" )
                 if read1.endswith(".gz"):  
-                        try:
-                                os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq.gz" )
-                        except OSError, e:
-                                pass
+                        os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq.gz" )
                 elif read1.endswith(".bz2"):
-                        try:
-                                os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq.bz2" )
-                        except OSError, e:
-                                pass
+                        os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq.bz2" )
                 else:
-                        try:
-                                os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq" )
-                        except OSError, e:
-                                pass
+                        os.symlink(read1, "group" + group + "/" + sample + "/" + library +"_1.fq" )
         else: 
                 print "row " + str(i) + ": read1 file not exist: " + read1 
                 exit()
@@ -104,21 +95,11 @@ for i in xrange(sh.nrows):
                 
                 if os.path.isfile(read2): 
                         if read2.endswith(".gz"):  
-                                try:
-                                        os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq.gz" )
-                                except OSError, e:
-                                        pass
+                             os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq.gz" )
                         elif read2.endswith(".bz2"):
-                                try:
-                                    os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq.bz2" )
-                                except OSError, e:
-                                    pass
-                                
+                             os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq.bz2" )
                         else:
-                                try:
-                                        os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq" )
-                                except OSError, e:
-                                        pass
+                             os.symlink(read2, "group" + group + "/" + sample + "/" + library +"_2.fq" )
                 else: 
                         print "row " + str(i) + ": read2 file not exist: " + read2 
                         exit()
