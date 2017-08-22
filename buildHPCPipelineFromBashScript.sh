@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage: \n$0 <old_bash_script.sh> <new_hpc_pipeline.sh> <bsub/sbatch options, such as: \"bsub -W 30:00 -q mcore -n 4\" or \"sbatch -p medium -t 24:0:0 -c 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
+usage() { echo -e "\nUsage: \n$0 <bash_script_V2.sh> <bash_script_V3.sh> <bsub/sbatch options, such as: \"bsub -W 30:00 -q mcore -n 4\" or \"sbatch -p medium -t 24:0:0 -c 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
 
 [[ "$3" != sbatch* &&  "$3" != bsub* ]] && usage
 
