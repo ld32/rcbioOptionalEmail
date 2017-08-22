@@ -1,39 +1,27 @@
-#!/bin/sh            
+#!/bin/sh
 
-#loopStart,i
-for i in `ls -d condition*`; do               #first loop           
-    cd $i            
+#the following is added, meaning: starting a loop and use university as looping variable    
+#loopStart,i	
+for i in A B; do            
     
-    #loopStart,j
-    for j in `ls -d sample*`; do              #second loop
-        cd $j    
-      
-        #loopStart,l
-        for l in `ls -f *.txt`; do             #third loop
-            
-            #@1,0,copy1: copy original file to .copy1
-            cp $l $l.copy1                     #step1
-            
-            #@2,1,copy2: copy .copy1 to .copy2
-            cp $l.copy1 $l.copy2               #step2  
-        
-        #loopEnd
-        done    
-        
-        #@3,1,merge1: merge .copy1 to .copy1.merged  
-        cat *.copy1 > $j.copy1.merged          #step3
+    u=university$i.txt    
     
-        #@4,2,merge2: merge .copy2 to .copy2.merged  
-        cat *.copy2 > $j.copy2.merged          #step4 
-        cd ..    
- 
-    #loopEnd
-    done            
-    
-    #@5,3.4,mergeall: merge everything together 
-    cat */*merged > $i.all                     #step5
-    
-    cd ..
+    #the following is added, meaning: start step1, depends on nothing, step name is "find1", want to copy u to /tmp        
+    #@1,0,find1,u:     
+    grep -H John $u >>  John.txt; grep -H Mike $u >>  Mike.txt        
+  
+    #the following is added, meaning: start step2, depends on nothing, step name is "find2", want to copy u to /tmp        
+    #@2,0,find2,u:
+    grep -H Nick $u >>  Nick.txt; grep -H Julia $u >>  Julia.txt
 
-#loopEnd    
-done           
+#the following is added, meaning: loop end here    
+#loopEnd                     
+done
+    
+#the following is added, meaning: start step3, depends on step1 and 2, step name is "merge"
+#@3,1.2,merge:           
+cat John.txt Mike.txt Nick.txt Julia.txt > all.txt
+
+# command to create testing data
+# echo -e "John Paul\nMike Smith\nNick Will\nJulia Johnson\nTom Jones"  >> universityA.txt
+# echo -e "John Paul\nMike Smith\nNick Will\nJulia Johnson\nTom Jones"  >> universityB.txt
