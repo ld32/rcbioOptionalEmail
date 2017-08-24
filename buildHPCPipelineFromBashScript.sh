@@ -158,7 +158,7 @@ for t in `cat $1`; do
 
         [[ "$3" == sbatch* ]] && cmd="{ $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
         
-        [[ "$3" == sbatch* ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun bash -c \\\"$cmd\\\"\")"   >> $run
+        [[ "$3" == sbatch* ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\")"   >> $run
         
         # echo exit >> $run   # only test for one job 
         [[ "$3" == bsub* ]] && echo "${space}id=\$(bsubRun \$xsub -flag \$deps \$cwd \$flag \"$cmd\")"   >> $run
