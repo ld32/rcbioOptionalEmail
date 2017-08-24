@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage: \n$0 <bash_script_V2.sh> <bash_script_V3.sh> <bsub/sbatch options, such as: \"bsub -W 30:00 -q mcore -n 4\" or \"sbatch -p medium -t 24:0:0 -c 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
+usage() { echo -e "\nUsage: \n$0 <bash_script_V2.sh> <bash_script_V3.sh> <bsub/sbatch options, such as: \"bsub -W 30:00 -q mcore -n 4\" or \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
 
 [[ "$3" != sbatch* &&  "$3" != bsub* ]] && usage
 
@@ -23,7 +23,7 @@ echo mkdir -p flag >> $run
 echo "if [ -f flag/alljobs.jid ]; then" >> $run
 [[ "$3" == sbatch* ]] && echo "    checkJobsSlurm  flag/alljobs.jid " >> $run
 
-[[ "$3" == sbatch* ]] && { core=${3#*-c }; core=${core%% *}; echo core: $core; [ "$core" -eq "$core" ] || { echo core is not number; exit 1; } }
+[[ "$3" == sbatch* ]] && { core=${3#*-n }; core=${core%% *}; echo core: $core; [ "$core" -eq "$core" ] || { echo core is not number; exit 1; } }
 
 [[ "$3" == bsub* ]] &&   echo "    checkJobs  flag/alljobs.jid " >> $run
 echo "    [ \$? == 1 ] && exit 0;" >> $run
@@ -158,7 +158,7 @@ for t in `cat $1`; do
 
         [[ "$3" == sbatch* ]] && cmd="{ $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
         
-        [[ "$3" == sbatch* ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -c $core -n 1 bash -c \\\"$cmd\\\"\")"   >> $run
+        [[ "$3" == sbatch* ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun bash -c \\\"$cmd\\\"\")"   >> $run
         
         # echo exit >> $run   # only test for one job 
         [[ "$3" == bsub* ]] && echo "${space}id=\$(bsubRun \$xsub -flag \$deps \$cwd \$flag \"$cmd\")"   >> $run
