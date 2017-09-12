@@ -143,7 +143,7 @@ for i in xrange(sh.nrows):
             os.symlink(read2, "group" + group + "/" + sample + "/" + library + "_" + lane + "_2.fq" )
                   
 if not os.path.exists("group2"):
-    print "Warning: Folder group2 is not created. Usualy you should have at lest two groups for NSG analysis."
+    print "Warning: Folder group2 is not created. Usualy you should have at least two groups for NSG analysis."
     exit()
 
 print "Done"
