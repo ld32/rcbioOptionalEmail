@@ -2,11 +2,10 @@
 
 #set -x 
 # to call this:                                        1                 2                                3         4          5        
-# sbatchRun sbatch -p priority -n 1 -t 2:0:0 -flag   <depend_job_ids>    <absolute_path_to_flag_folder>   <my_job>  <"my_application para1   para2"> 
+# sbatchRun sbatch -p priority -c 1 -t 2:0:0 -flag   <depend_job_ids>    <absolute_path_to_flag_folder>   <my_job>  <"my_application para1   para2"> 
 
 # This script will submit a sbatch job named "my_job", run commands in "my_job.sh", output to "my_job.out".
 # When the job runs, it creates "my_job.start", "my_job.failed" if fails, "my_job.success" if successes. 
-# If this job fails, it kills all jobs which depends on this job.
 
 # If this is a re-run it also delete the downstream jobs' .success flag file, so that user is not asked to if he want to re-run these downstream jobs 
 para=( "$@" )
@@ -32,7 +31,7 @@ done
 #echo c: $c >&2
 
 # escape back slash
-c=${c/\\/\\\\}
+c=${c//\\/\\\\}
 #echo c: $c >&2
 
 d=${d#.}
@@ -53,17 +52,16 @@ else
 fi
 
 #echo checking file: $w/$f.success  >&2
-
 #touch $w/$f.success
 
 if [ -f $w/$f.success ]; then
     read -p "$f was done before, do you want to re-run for $sample (y)?:" x </dev/tty
 	if [[ "$x" == "y" ]]; then
-        rm $w/$f.success 
+        rm $w/$f.success 2>/dev/null  
         
         # remove downstream jobs' .success flag
         findDownStreamJobs.sh $w $f removeSuccessFlag >&2 
-        echo command is: findDownStreamJobs.sh $w $f removeSuccessFlag >&2 
+        #echo command is: findDownStreamJobs.sh $w $f removeSuccessFlag >&2 
         echo Will re-run the down stream steps even if they are done before. >&2 
     else
         exit; 
@@ -73,24 +71,21 @@ fi
  
 rm -f $w/$f.start $w/$f.failed $w/$f.killed  2>/dev/null 
 
-echo -e "#!/bin/bash\n$other\n#Commands:\ntouch $w/$f.start\n$c && touch $w/$f.success || { touch $w/$f.failed; exit 1; }" > $w/$f.sh  
+echo -e "#!/bin/bash\n$other\n#Commands:\ntouch $w/$f.start\n$c\nsleep 5\nexport SLURM_TIME_FORMAT=relative\necho Job done. Summary:\nsacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%30,CPUTime,MaxRSS,MaxVMSize,NodeList --units=M -j \$SLURM_JOBID\nsendJobFinishEmail.sh  $w/$f\n[ -f $w/$f.failed ] && exit 1 || exit 0" > $w/$f.sh
 
 # if this job fails, kill all the jobs which depends on this one
 # remove the line if you don't need to kill jobs automatically
 # don't need to kill for slurm, the jobs will be killed automatically
 #dep="-Ep \"${0%/*}/findDownStreamJobs.sh $w $f \""; 
 
-cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $f --mail-type=ALL -o $w/$f.out -e $w/$f.out --wrap=\"sh $w/$f.sh\"" 
-
-#cmd="$b $deps -J $f -B -N $dep sh $w/$f.sh" 
+cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $f -o $w/$f.out -e $w/$f.out $w/$f.sh" 
 
 [[ "$deps" != *&&* ]] && output="$($cmd)" || output="$(eval $cmd)"
-#echo bsub output: $output >&2
-#echo $output | head -n1 | cut -d'<' -f2 | cut -d'>' -f1 
+ 
 echo ${output##* }
-#  tee -a $f.jid; #here don't need to write the id any more.
 
 #cat $f.sh >&2
-echo -e "# $cmd \n# $output\n" >&2
+
+echo -e "# $cmd \n# $output" >&2
 
 echo -e "\n# $output" >> $w/$f.sh
