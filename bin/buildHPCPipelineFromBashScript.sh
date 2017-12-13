@@ -12,32 +12,36 @@ run="$2"
 
 echo converting $1 to $2
 
-echo "#!/bin/sh" > $run  
 
-echo "echo Running \$0 \$@"  >> $run        
+cat <<EOT > $run
+    #!/bin/sh 
 
-echo "xsub=\"$3\"" >> $run
+    echo Running \$0 \$@       
 
-echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run
+    xsub=\"$3\" 
+
+    stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")
     
-echo mkdir -p flag >> $run
+    mkdir -p flag
 
-echo "if [ -f flag/alljobs.jid ]; then" >> $run
+    if [ -f flag/alljobs.jid ]; then
+        
+        checkJobsSlurm  flag/alljobs.jid 
 
-echo "    checkJobsSlurm  flag/alljobs.jid " >> $run
+        [ \$? == 1 ] && exit 0;" 
+    fi
 
-echo "    [ \$? == 1 ] && exit 0;" >> $run
+    cwd=\`realpath ./flag\`
 
-echo "fi" >> $run
+    #echo "rm flag/*.failed flag/*.killed 2>/dev/null" >> $run
 
-echo "cwd=\`realpath ./flag\`" >> $run
+    [ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old
 
-#echo "rm flag/*.failed flag/*.killed 2>/dev/null" >> $run
+    printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid
+  
+    echo ---------------------------------------------------------
+EOT
 
-echo "[ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old"  >> $run 
-
-echo "printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid" >> $run 
-echo "echo ---------------------------------------------------------" >> $run
 
 [ "$4" == "useTmp" ] && echo ". $(dirname $0)/rcUtils.sh" >> $run
 
