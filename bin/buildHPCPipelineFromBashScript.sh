@@ -139,10 +139,10 @@ for t in `cat $1`; do
 	    cat <<EOT >> $run
 	        ${space}echo; echo step: $step, depends on: $de, job name: $name, flag: $name$loper $useTmp
 	        ${space}flag=${step}.$de.${name}${loper}
-            ${space}flag=\${flag//\//_}"   # replace path / to _ 
+            ${space}flag=\${flag//\//_}   # replace path / to _ 
         
-            ${space}deps=\"\""  
-        EOT
+            ${space}deps=\"\" 
+EOT
         if [[ "$de" != "0" ]]; then
             if [[ "$de" == *\.* ]]; then
                 for dep in ${de//\./ }; do
@@ -180,7 +180,7 @@ for t in `cat $1`; do
         
             ${space}    alljobs=\"\$alljobs \$id\"
             ${space}    printf \"%-10s  %-20s  %-10s\n\" \$id \$deps \$flag >> \$cwd/alljobs.jid
-        EOT
+EOT
         
         # tell this is out of the loop for the depending job (de), so that we clear the job id list for the next step with depends on 'de'
         if [[ "$de" == *\.* ]]; then
@@ -196,7 +196,7 @@ for t in `cat $1`; do
             ${space}    jobIDs[$step]=\${jobIDs[$step]}.\$id
         
             ${space}fi 
-        EOT
+EOT
         IFS=''
         cmd=""
           
