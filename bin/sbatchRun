@@ -80,6 +80,8 @@ echo -e "#!/bin/bash\n$other\n#Commands:\ntouch $w/$f.start\n$c\nsleep 5\nexport
 
 cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $f -o $w/$f.out -e $w/$f.out $w/$f.sh" 
 
+echo -e "\n#sbatch command:\n#$cmd" >> $w/$f.sh
+
 [[ "$deps" != *&&* ]] && output="$($cmd)" || output="$(eval $cmd)"
  
 echo ${output##* }
