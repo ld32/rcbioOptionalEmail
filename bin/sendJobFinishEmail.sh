@@ -11,7 +11,7 @@ actualsize=`wc -c $flag.out`
 [ -f $flag.failed ] && s="Subject: Failed: job id:$SLURM_JOBID name:$SLURM_JOB_NAME\n" ||  s="Subject: Success: job id:$SLURM_JOBID name:$SLURM_JOB_NAME\n"
 
 stat=`tail -n 1 $flag.out`
-[[ "$stat" == *COMPLETED* ]] && echo Notice the sacct report above: while the main job is still running for sacct command, user task is completed. >> $flag.out
+[[ "$stat" == *COMPLETED* ]] && echo *Notice the sacct report above: while the main job is still running for sacct command, user task is completed. >> $flag.out
 
 if [ "${actualsize% *}" -ge "$minimumsize" ]; then
    toSend=`echo Job script content:; cat $flag.sh`
