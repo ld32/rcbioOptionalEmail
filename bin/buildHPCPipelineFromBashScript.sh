@@ -33,7 +33,7 @@ cat <<EOT > $run
 
     cwd=\`realpath ./flag\`
 
-    #echo "rm flag/*.failed flag/*.killed 2>/dev/null" >> $run
+    #echo rm flag/*.failed flag/*.killed 2>/dev/null
 
     [ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old
 
