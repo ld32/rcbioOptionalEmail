@@ -1,8 +1,8 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage: \n$0 <bash_script_V2.sh> <bash_script_V3.sh> <bsub/sbatch options, such as: \"bsub -W 30:00 -q mcore -n 4\" or \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
+usage() { echo -e "\nUsage: \n$0 <bash_script_V2.sh> <bash_script_V3.sh> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
 
-[[ "$3" != sbatch* &&  "$3" != bsub* ]] && usage
+[[ "$3" != sbatch* ]] && usage
 
 [ -f "$1" ] || { echo bash script file not exist: $1. Exiting...; usage; }
 
@@ -14,6 +14,9 @@ echo "#!/bin/sh" > $run
 
 echo "echo Running \$0 \$@"  >> $run        
 
+core=${3#*-n }; core=${core%% *}; echo core: $core; [ "$core" -eq "$core" ] || { echo core is not number; exit 1; } 
+
+
 echo "xsub=\"$3\"" >> $run
 
 echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run
@@ -21,12 +24,11 @@ echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run
 echo mkdir -p flag >> $run
 
 echo "if [ -f flag/alljobs.jid ]; then" >> $run
-[[ "$3" == sbatch* ]] && echo "    checkJobsSlurm  flag/alljobs.jid " >> $run
 
-[[ "$3" == sbatch* ]] && { core=${3#*-n }; core=${core%% *}; echo core: $core; [ "$core" -eq "$core" ] || { echo core is not number; exit 1; } }
+echo "    checkJobsSlurm  flag/alljobs.jid " >> $run
 
-[[ "$3" == bsub* ]] &&   echo "    checkJobs  flag/alljobs.jid " >> $run
 echo "    [ \$? == 1 ] && exit 0;" >> $run
+
 echo "fi" >> $run
 
 echo "cwd=\`realpath ./flag\`" >> $run
@@ -148,7 +150,7 @@ for t in `cat $1`; do
         
                 
         # escape double quota. bsub does not need this? not sure
-        [[ "$3" == sbatch* ]] && cmd=${cmd//\"/\\\\\"}
+        cmd=${cmd//\"/\\\\\"}
 
         # replace space with ., if the job depends on something
         echo "${space}[ -z \"\${deps// /}\" ] && deps=null || deps=\${deps// /.}" >> $run
@@ -156,12 +158,10 @@ for t in `cat $1`; do
         #echo "echo command is: bsubRun \$xsub -flag \$deps \$cwd \$flag \"$cmd\" " >> $run
         [[ "$4" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPath $ref" >> $run && cmd="rsyncToTmp ${ref//./ $}; $cmd"
 
-        [[ "$3" == sbatch* ]] && cmd="{ $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
+        cmd="{ $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
         
-        [[ "$3" == sbatch* ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\")"   >> $run
-        
-        # echo exit >> $run   # only test for one job 
-        [[ "$3" == bsub* ]] && echo "${space}id=\$(bsubRun \$xsub -flag \$deps \$cwd \$flag \"$cmd\")"   >> $run
+        # echo exit >> $run   # only test for one job
+        echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\")"   >> $run
        
         [[ "$4" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPathBack $ref" >> $run 
         #echo "echo id is: \$id ">> $run
