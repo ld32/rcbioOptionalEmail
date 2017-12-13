@@ -6,6 +6,8 @@ usage() { echo -e "\nUsage: \n$0 <bash_script_v2.sh> <bash_script_v3.sh> <sbatch
 
 [ -f "$1" ] || { echo bash script file not exist: $1. Exiting...; usage; }
 
+core=${3#*-n }; core=${core%% *}; echo core: $core; [ "$core" -eq "$core" ] || { echo core is not number; exit 1; } 
+
 run="$2"
 
 echo converting $1 to $2
@@ -13,9 +15,6 @@ echo converting $1 to $2
 echo "#!/bin/sh" > $run  
 
 echo "echo Running \$0 \$@"  >> $run        
-
-core=${3#*-n }; core=${core%% *}; echo core: $core; [ "$core" -eq "$core" ] || { echo core is not number; exit 1; } 
-
 
 echo "xsub=\"$3\"" >> $run
 
