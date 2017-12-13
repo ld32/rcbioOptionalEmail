@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage: \n$0 <bash_script_V2.sh> <bash_script_V3.sh> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
+usage() { echo -e "\nUsage: \n$0 <bash_script_v2.sh> <bash_script_v3.sh> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
 
 [[ "$3" != sbatch* ]] && usage
 
