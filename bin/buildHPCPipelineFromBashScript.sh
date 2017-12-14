@@ -18,9 +18,9 @@ cat <<EOT > $run
 
     echo Running \$0 \$@       
 
-    xsub=\"$3\" 
+    xsub="$3" 
 
-    stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")
+    stamp=\$(date -d "today" +\"%Y%m%d%H%M\")
     
     mkdir -p flag
 
@@ -28,7 +28,7 @@ cat <<EOT > $run
         
         checkJobsSlurm  flag/alljobs.jid 
 
-        [ \$? == 1 ] && exit 0;" 
+        [ \$? == 1 ] && exit 0;
     fi
 
     cwd=\`realpath ./flag\`
@@ -37,7 +37,7 @@ cat <<EOT > $run
 
     [ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old
 
-    printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid
+    printf "%-10s   %-20s   %-10s\n" job_id depend_on job_flag > flag/alljobs.jid
   
     echo ---------------------------------------------------------
 EOT
@@ -141,7 +141,7 @@ for t in `cat $1`; do
 	        ${space}flag=${step}.$de.${name}${loper}
             ${space}flag=\${flag//\//_}   # replace path / to _ 
         
-            ${space}deps=\"\" 
+            ${space}deps="" 
 EOT
         if [[ "$de" != "0" ]]; then
             if [[ "$de" == *\.* ]]; then
@@ -172,14 +172,14 @@ EOT
         cat <<EOT >> $run
             #echo id is: \$id 
                     
-            ${space}if [ -z \"\$id\" ]; then
+            ${space}if [ -z "\$id" ]; then
             ${space}    echo  job \$flag is not submitted
-            ${space}    jobID[$step]=\"\"
+            ${space}    jobID[$step]=""
             ${space}else
             #${space}    touch \$cwd/\$flag.submitted 
         
-            ${space}    alljobs=\"\$alljobs \$id\"
-            ${space}    printf \"%-10s  %-20s  %-10s\n\" \$id \$deps \$flag >> \$cwd/alljobs.jid
+            ${space}    alljobs="\$alljobs \$id"
+            ${space}    printf "%-10s  %-20s  %-10s\n" \$id \$deps \$flag >> \$cwd/alljobs.jid
 EOT
         
         # tell this is out of the loop for the depending job (de), so that we clear the job id list for the next step with depends on 'de'
@@ -191,8 +191,8 @@ EOT
                 [ -z $sameloop ] && echo "${space}    startNewLoop[$de]=\"no\""  >> $run || echo "    ${space}startNewLoop[$de]=\"\""  >> $run 
         fi
         cat <<EOT >> $run
-            ${space}    [ -z \${startNewLoop[$step]} ] && jobIDs[$step]=\"\" && startNewLoop[$step]=\"no\" 
-            ${space}    jobID[$step]=\$id"  >> $run
+            ${space}    [ -z \${startNewLoop[$step]} ] && jobIDs[$step]="" && startNewLoop[$step]="no" 
+            ${space}    jobID[$step]=\$id  
             ${space}    jobIDs[$step]=\${jobIDs[$step]}.\$id
         
             ${space}fi 
@@ -207,7 +207,7 @@ EOT
             echo find loopend: $i
             #space=${space%    }
             loper=${loper%.\$*}
-        elif [[ "$i" == \#loopStart* ]]; then
+            elif [[ "$i" == \#loopStart* ]]; then
             echo; echo find loopStart: $i
             a=`echo $i | xargs`  # remove leading space and tailing space
             a=${a#*,}
