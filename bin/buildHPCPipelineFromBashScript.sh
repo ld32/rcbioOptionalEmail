@@ -12,36 +12,32 @@ run="$2"
 
 echo converting $1 to $2
 
+echo "#!/bin/sh" > $run  
 
-cat <<EOT > $run
-    #!/bin/sh 
+echo "echo Running \$0 \$@"  >> $run        
 
-    echo Running \$0 \$@       
+echo "xsub=\"$3\"" >> $run
 
-    xsub=\"$3\" 
-
-    stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")
+echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run
     
-    mkdir -p flag
+echo mkdir -p flag >> $run
 
-    if [ -f flag/alljobs.jid ]; then
-        
-        checkJobsSlurm  flag/alljobs.jid 
+echo "if [ -f flag/alljobs.jid ]; then" >> $run
 
-        [ \$? == 1 ] && exit 0;" 
-    fi
+echo "    checkJobsSlurm  flag/alljobs.jid " >> $run
 
-    cwd=\`realpath ./flag\`
+echo "    [ \$? == 1 ] && exit 0;" >> $run
 
-    #echo rm flag/*.failed flag/*.killed 2>/dev/null
+echo "fi" >> $run
 
-    [ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old
+echo "cwd=\`realpath ./flag\`" >> $run
 
-    printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid
-  
-    echo ---------------------------------------------------------
-EOT
+#echo "rm flag/*.failed flag/*.killed 2>/dev/null" >> $run
 
+echo "[ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old"  >> $run 
+
+echo "printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid" >> $run 
+echo "echo ---------------------------------------------------------" >> $run
 
 [ "$4" == "useTmp" ] && echo ". $(dirname $0)/rcUtils.sh" >> $run
 
@@ -108,7 +104,7 @@ for t in `cat $1`; do
         findjob=""
         [ ! -z ${find[$step]} ] && { echo job step id should be unique: $step exiting...; exit 1; } ||  find[$step]=yes
                 
-        cmd=${cmd//\\/\\\\}    # escape back slash
+        cmd=${cmd//\\/\\\\}   # escape back slash
         
         #echo cmd2 is $cmd
         cmd=${cmd//\"/\\\"} # escape double quotes
@@ -136,13 +132,11 @@ for t in `cat $1`; do
                       
         #echo "debug: ${cloper[$step]} ${cloper[$de]} .$sameloop. " >> $run
         [ "$4" == "useTmp" ] && useTmp="reference: $ref"
-	    cat <<EOT >> $run
-	        ${space}echo; echo step: $step, depends on: $de, job name: $name, flag: $name$loper $useTmp
-	        ${space}flag=${step}.$de.${name}${loper}
-            ${space}flag=\${flag//\//_}   # replace path / to _ 
+	    echo -e "${space}echo; echo step: $step, depends on: $de, job name: $name, flag: $name$loper $useTmp " >> $run
+        echo "${space}flag=${step}.$de.${name}${loper}"  >> $run
+        echo "${space}flag=\${flag//\//_}" >> $run   # replace path / to _ 
         
-            ${space}deps=\"\" 
-EOT
+        echo -e "${space}deps=\"\""  >> $run
         if [[ "$de" != "0" ]]; then
             if [[ "$de" == *\.* ]]; then
                 for dep in ${de//\./ }; do
@@ -169,18 +163,16 @@ EOT
         echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\")"   >> $run
        
         [[ "$4" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPathBack $ref" >> $run 
-        cat <<EOT >> $run
-            #echo id is: \$id 
-                    
-            ${space}if [ -z \"\$id\" ]; then
-            ${space}    echo  job \$flag is not submitted
-            ${space}    jobID[$step]=\"\"
-            ${space}else
-            #${space}    touch \$cwd/\$flag.submitted 
+        #echo "echo id is: \$id ">> $run
         
-            ${space}    alljobs=\"\$alljobs \$id\"
-            ${space}    printf \"%-10s  %-20s  %-10s\n\" \$id \$deps \$flag >> \$cwd/alljobs.jid
-EOT
+        echo "${space}if [ -z \"\$id\" ]; then"  >> $run
+        echo "${space}    echo  job \$flag is not submitted"  >> $run
+        echo "${space}    jobID[$step]=\"\"" >> $run 
+        echo "${space}else"  >> $run
+        #echo "${space}    touch \$cwd/\$flag.submitted" >> $run 
+        
+        echo "${space}    alljobs=\"\$alljobs \$id\"" >> $run 
+        echo "${space}    printf \"%-10s  %-20s  %-10s\n\" \$id \$deps \$flag >> \$cwd/alljobs.jid"  >> $run 
         
         # tell this is out of the loop for the depending job (de), so that we clear the job id list for the next step with depends on 'de'
         if [[ "$de" == *\.* ]]; then
@@ -190,13 +182,12 @@ EOT
         else    
                 [ -z $sameloop ] && echo "${space}    startNewLoop[$de]=\"no\""  >> $run || echo "    ${space}startNewLoop[$de]=\"\""  >> $run 
         fi
-        cat <<EOT >> $run
-            ${space}    [ -z \${startNewLoop[$step]} ] && jobIDs[$step]=\"\" && startNewLoop[$step]=\"no\" 
-            ${space}    jobID[$step]=\$id"  >> $run
-            ${space}    jobIDs[$step]=\${jobIDs[$step]}.\$id
         
-            ${space}fi 
-EOT
+        echo "${space}    [ -z \${startNewLoop[$step]} ] && jobIDs[$step]=\"\" && startNewLoop[$step]=\"no\" " >> $run 
+        echo "${space}    jobID[$step]=\$id"  >> $run
+        echo "${space}    jobIDs[$step]=\${jobIDs[$step]}.\$id"  >> $run
+        
+        echo "${space}fi" >> $run 
         IFS=''
         cmd=""
           
@@ -220,18 +211,14 @@ done
 [ $? == 1 ] && exit 0;
 
 # go back to the original folder
+echo "cd \$cwd/.." >> $run
 
-cat <<EOT >> $run
-
-    cd \$cwd/..
-
-    echo all submitted jobs: 
-    cat flag/alljobs.jid 
-    echo ---------------------------------------------------------
-    [ -f flag/alljobs.jid.first ] || cp flag/alljobs.jid flag/alljobs.jid.first 
-EOT
+echo "echo all submitted jobs: " >> $run
+echo "cat flag/alljobs.jid" >> $run 
+echo "echo ---------------------------------------------------------" >> $run
 
 chmod a+x $run 
 
-echo all done
+echo "[ -f flag/alljobs.jid.first ] || cp flag/alljobs.jid flag/alljobs.jid.first " >> $run 
 
+echo all done
