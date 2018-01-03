@@ -104,7 +104,7 @@ for t in `cat $1`; do
         findjob=""
         [ ! -z ${find[$step]} ] && { echo job step id should be unique: $step exiting...; exit 1; } ||  find[$step]=yes
                 
-        cmd=${cmd//\\/\\\\}    # escape back slash
+        cmd=${cmd//\\/\\\\}   # escape back slash
         
         #echo cmd2 is $cmd
         cmd=${cmd//\"/\\\"} # escape double quotes
