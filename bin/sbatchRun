@@ -1,8 +1,9 @@
 #!/bin/sh
 
 #set -x 
-# to call this:                                        1                 2                                3         4          5        
-# sbatchRun sbatch -p priority -c 1 -t 2:0:0 -flag   <depend_job_ids>    <absolute_path_to_flag_folder>   <my_job>  <"my_application para1   para2"> 
+# to call this:     1                 2                                3          4         5  
+# parameter 5 (test is for testing, not really submit job), it is optional.           
+# sbatchRun sbatch -p priority -c 1 -t 2:0:0 -flag   <depend_job_ids>    <absolute_path_to_flag_folder>   <my_job>  <"my_application para1   para2"> [test]
 
 # This script will submit a sbatch job named "my_job", run commands in "my_job.sh", output to "my_job.out".
 # When the job runs, it creates "my_job.start", "my_job.failed" if fails, "my_job.success" if successes. 
@@ -18,6 +19,7 @@ for i in "${!para[@]}"; do
         w=${para[$i+2]}
         f=${para[$i+3]}
         c="${para[$i+4]}"
+        x="${para[$i+5]}"
         # check the application is available (module is loaded)
         #type "${para[$i+2]}"  >/dev/null 2>&1 || { echo >&2 "Error: command '${para[$i+2]}' could not be found, did you forget to load the module? Aborting."; exit 1; }
     fi
@@ -28,7 +30,8 @@ done
 #echo d: $d   >&2
 #echo w: $w  >&2
 #echo f: $f  >&2
-#echo c: $c >&2
+#echo c: $c  >&2
+#echo x: $x  >&2
 
 # escape back slash
 c=${c//\\/\\\\}
@@ -67,7 +70,6 @@ if [ -f $w/$f.success ]; then
         exit; 
     fi  
 fi
-
  
 rm -f $w/$f.start $w/$f.failed $w/$f.killed  2>/dev/null 
 
@@ -78,16 +80,21 @@ echo -e "#!/bin/bash\n$other\n#Commands:\ntouch $w/$f.start\n$c\nsleep 5\nexport
 # don't need to kill for slurm, the jobs will be killed automatically
 #dep="-Ep \"${0%/*}/findDownStreamJobs.sh $w $f \""; 
 
-cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $f -o $w/$f.out -e $w/$f.out $w/$f.sh" 
+#cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $f -o $w/$f.out -e $w/$f.out $w/$f.sh" 
+cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep $deps -J $f -o $w/$f.out -e $w/$f.out $w/$f.sh" 
 
 echo -e "\n#sbatch command:\n#$cmd" >> $w/$f.sh
 
-[[ "$deps" != *&&* ]] && output="$($cmd)" || output="$(eval $cmd)"
- 
+if [[ "$x"  == test ]]; then 
+     output=123  
+else 
+    [[ "$deps" != *&&* ]] && output="$($cmd)" || output="$(eval $cmd)"
+fi 
+
 echo ${output##* }
 
 #cat $f.sh >&2
 
-echo -e "# $cmd \n# $output" >&2
+echo -e "$cmd \n# $output" >&2
 
 echo -e "\n# $output" >> $w/$f.sh
