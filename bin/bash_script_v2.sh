@@ -11,7 +11,7 @@ for i in A B; do
     grep -H John $u >>  John.txt; grep -H Mike $u >>  Mike.txt        
   
     #the following is added, meaning: start step2, depends on nothing, step name is "find2", want to copy u to /tmp        
-    #@2,0,find2,u:
+    #@2,0,find2,u,sbatch -p short -n 1 -t 50:0
     grep -H Nick $u >>  Nick.txt; grep -H Julia $u >>  Julia.txt
 
 #the following is added, meaning: loop end here    
