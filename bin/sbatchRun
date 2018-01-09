@@ -1,5 +1,7 @@
 #!/bin/sh
 
+usage() { echo -e "Usage: \nsbatchRun <default sbatch parameters, for example: sbatch -p priority -c 1 -t 2:0:0 > <Other parameters, for example: -flag   <depend_job_ids>    <absolute_path_to_flag_folder>   <my_job>  <\"my_application para1   para2\"> [test]>\nThis script will submit a sbatch job named \"my_job\", run commands in \"my_job.sh\", output to \"my_job.out\"."; exit 1; } 
+
 #set -x 
 # to call this:     1                 2                                3          4         5  
 # parameter 5 (test is for testing, not really submit job), it is optional.           
@@ -9,6 +11,9 @@
 # When the job runs, it creates "my_job.start", "my_job.failed" if fails, "my_job.success" if successes. 
 
 # If this is a re-run it also delete the downstream jobs' .success flag file, so that user is not asked to if he want to re-run these downstream jobs 
+
+[ $# -le 5 ] && usage
+
 para=( "$@" )
 
 for i in "${!para[@]}"; do 

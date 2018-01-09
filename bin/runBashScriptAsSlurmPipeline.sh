@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "Usage: \n${0##*/} <bash_script_v2.sh> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp> <test/run>"; exit 1; } 
+usage() { echo -e "Usage: \n${0##*/} <bash_script_v2.sh> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp> <[run]"; exit 1; } 
 
 [ -f "$1" ] || { echo bash script file not exist: $1. Exiting...; usage; }
 
