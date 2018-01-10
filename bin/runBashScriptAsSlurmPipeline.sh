@@ -26,7 +26,7 @@ echo "#!/bin/sh" > $run
 
 echo "echo Running \$0 \$@"  >> $run        
 
-echo "xsub=\"$2\"" >> $run
+echo "xsubd=\"$2\"" >> $run
 
 #echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run
     
@@ -87,7 +87,7 @@ for t in `cat $1`; do
         ref=${arrIN[3]%%:*} # references files which need to rsync to tmp space
 	    xsuba=${arrIN[4]}  # sbatch options
 	    
-	    [ ! -z "$xsuba" ] && { echo "${space}xsub=\"$xsuba\"" >> $run; echo sbatch options: $xsuba; } || echo "${space}xsub=\"\$xsub\"" >> $run 
+	    [ ! -z "$xsuba" ] && { echo "${space}xsub=\"$xsuba\"" >> $run; echo sbatch options: $xsuba; } || echo "${space}xsub=\"\$xsubd\"" >> $run 
 	    
 	    
 	    [ -z "$ref" ] || ref=.$ref
