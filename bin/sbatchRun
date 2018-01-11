@@ -19,87 +19,87 @@ para=( "$@" )
 for i in "${!para[@]}"; do 
     #echo -e "$i ${para[$i]}" >&2
     if [ "${para[$i]}" == "-flag" ]; then
-        b="${para[@]:0:$i}"
-        d=${para[$i+1]}
-        w=${para[$i+2]}
-        f=${para[$i+3]}
-        c="${para[$i+4]}"
-        x="${para[$i+5]}"
+        xsub="${para[@]:0:$i}"
+        dep=${para[$i+1]}    # dependency string
+        wp=${para[$i+2]}     # working path
+        flag=${para[$i+3]}   # flag base
+        cm="${para[$i+4]}"   # command
+        te="${para[$i+5]}"   # test
         # check the application is available (module is loaded)
         #type "${para[$i+2]}"  >/dev/null 2>&1 || { echo >&2 "Error: command '${para[$i+2]}' could not be found, did you forget to load the module? Aborting."; exit 1; }
     fi
 done
 
 
-#echo b: $b  >&2
-#echo d: $d   >&2
-#echo w: $w  >&2
-#echo f: $f  >&2
-#echo c: $c  >&2
-#echo x: $x  >&2
+#echo b: $xsub  >&2
+#echo d: $dep   >&2
+#echo w: $wp  >&2
+#echo f: $flag  >&2
+#echo c: $cm  >&2
+#echo x: $te  >&2
 
 # escape back slash
-c=${c//\\/\\\\}
-#echo c: $c >&2
+cm=${cm//\\/\\\\}
+#echo c: $cm >&2
 
-d=${d#.}
+dep=${dep#.}
 
 #echo d1 ${d/\./} >&2
-if [[ $d == null ]]; then
+if [[ $dep == null ]]; then
     deps=""
     echo depend on no job >&2
-elif [[ $d == ${d/\./} ]]; then
+elif [[ $dep == ${d/\./} ]]; then
     echo depend on single job >&2
     deps="--dependency=afterok:${d/\./}"
 else
     echo depend on multiple jobs >&2
-    for t in ${d//\./ }; do
+    for t in ${dep//\./ }; do
        deps="$deps:$t"
     done
     [ ! -z "$deps" ] && deps="--dependency=afterok$deps"
 fi
 
-#echo checking file: $w/$f.success  >&2
-#touch $w/$f.success
+#echo checking file: $wp/$flag.success  >&2
+#touch $wp/$flag.success
 
-if [ -f $w/$f.success ] && [[ "$x"  != test ]]; then
-    read -p "$f was done before, do you want to re-run for $sample (y)?:" z </dev/tty
-	if [[ "$z" == "y" ]]; then
-        rm $w/$f.success 2>/dev/null  
+if [ -f $wp/$flag.success ] && [[ "$te"  != test ]]; then
+    read -p "$flag was done before, do you want to re-run for $sample (y)?:" x </dev/tty
+	if [[ "$x" == "y" ]]; then
+        rm $wp/$flag.success 2>/dev/null  
         
         # remove downstream jobs' .success flag
-        findDownStreamJobs.sh $w $f removeSuccessFlag >&2 
-        #echo command is: findDownStreamJobs.sh $w $f removeSuccessFlag >&2 
+        findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2 
+        #echo command is: findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2 
         echo Will re-run the down stream steps even if they are done before. >&2 
     else
         exit; 
     fi  
 fi
  
-rm -f $w/$f.start $w/$f.failed $w/$f.killed  2>/dev/null 
+rm -f $wp/$flag.start $wp/$flag.failed $wp/$flag.killed  2>/dev/null 
 
-echo -e "#!/bin/bash\n$other\n#Commands:\ntouch $w/$f.start\n$c\nsleep 5\nexport SLURM_TIME_FORMAT=relative\necho Job done. Summary:\nsacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%30,CPUTime,MaxRSS,MaxVMSize,NodeList --units=M -j \$SLURM_JOBID\nsendJobFinishEmail.sh  $w/$f\n[ -f $w/$f.failed ] && exit 1 || exit 0" > $w/$f.sh
+echo -e "#!/bin/bash\n#Commands:\ntouch $wp/$flag.start\n$cm\nsleep 5\nexport SLURM_TIME_FORMAT=relative\necho Job done. Summary:\nsacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%30,CPUTime,MaxRSS,MaxVMSize,NodeList --units=M -j \$SLURM_JOBID\nsendJobFinishEmail.sh  $wp/$flag\n[ -f $wp/$flag.failed ] && exit 1 || exit 0" > $wp/$flag.sh
 
 # if this job fails, kill all the jobs which depends on this one
 # remove the line if you don't need to kill jobs automatically
 # don't need to kill for slurm, the jobs will be killed automatically
-#dep="-Ep \"${0%/*}/findDownStreamJobs.sh $w $f \""; 
+#dep="-Ep \"${0%/*}/findDownStreamJobs.sh $wp $flag \""; 
 
-#cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $f -o $w/$f.out -e $w/$f.out $w/$f.sh" 
-cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep $deps -J $f -o $w/$f.out -e $w/$f.out $w/$f.sh" 
+#cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
+cmd="$xsub --nodes=1 $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
 
-echo -e "\n#sbatch command:\n#$cmd" >> $w/$f.sh
+echo -e "\n#sbatch command:\n#$cmd" >> $wp/$flag.sh
 
-if [[ "$x"  == test ]]; then 
-     output=123  
+if [[ "$te"  == test ]]; then 
+     output="Submitted batch job 123"  
 else 
     [[ "$deps" != *&&* ]] && output="$($cmd)" || output="$(eval $cmd)"
 fi 
 
 echo ${output##* }
 
-#cat $f.sh >&2
+#cat $flag.sh >&2
 
 echo -e "$cmd \n# $output" >&2
 
-echo -e "\n# $output" >> $w/$f.sh
+echo -e "\n# $output" >> $wp/$flag.sh
