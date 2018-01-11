@@ -1,24 +1,34 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage: \n$0 <bash_script_v2.sh> <bash_script_v3.sh> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp>"; exit 1; } 
+usage() { echo -e "Usage: \n${0##*/} <bash_script_v2.sh [parameter1] [parameter2] ...> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp> [run, default is empty to test the pipeline, which does not submit jobs, only create fake job id, 123.]"; exit 1; } 
 
-[[ "$3" != sbatch* ]] && usage
+[ -e ${1%% *} ] || { echo bash script file not exist: ${1%% *} Exiting...; usage; }
 
-[ -f "$1" ] || { echo bash script file not exist: $1. Exiting...; usage; }
+[[ "$2" != sbatch* ]] && usage
 
-core=${3#*-n }; core=${core%% *}; echo core: $core; [ "$core" -eq "$core" ] || { echo core is not number; exit 1; } 
+core=${2#*-n }; core=${core%% *}; [ "$core" -eq "$core" ] || { echo core is not number; usage; } 
 
-run="$2"
+[[ "$3" == useTmp ]] || [[ "$3" == noTmp ]] || usage 
 
-echo converting $1 to $2
+[[ -z "$4"  ]] || [[ "$4" == run ]] || usage  
+
+stamp=$(date -d "today" +"%Y%m%d%H%M")
+
+mkdir -p flag
+
+run=flag/slurmPipeLine.$stamp.sh
+
+[[ "$4" == run ]] && run=flag/slurmPipeLine.$stamp.run.sh
+
+echo converting $1 to $run
 
 echo "#!/bin/sh" > $run  
 
 echo "echo Running \$0 \$@"  >> $run        
 
-echo "xsub=\"$3\"" >> $run
+echo "xsubd=\"$2\"" >> $run
 
-echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run
+#echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run
     
 echo mkdir -p flag >> $run
 
@@ -39,10 +49,10 @@ echo "[ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old"  >> $
 echo "printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid" >> $run 
 echo "echo ---------------------------------------------------------" >> $run
 
-[ "$4" == "useTmp" ] && echo ". $(dirname $0)/rcUtils.sh" >> $run
+[ "$3" == "useTmp" ] && echo ". $(dirname $0)/rcUtils.sh" >> $run
 
 IFS=$'\n'
-for t in `cat $1`; do 
+for t in `cat ${1%% *}`; do 
     #echo original row: .$t. 
     
     # get space and the real command
@@ -75,6 +85,11 @@ for t in `cat $1`; do
         de=${arrIN[1]}   
         name=${arrIN[2]%%:*}
         ref=${arrIN[3]%%:*} # references files which need to rsync to tmp space
+	    xsuba=${arrIN[4]}  # sbatch options
+	    
+	    [ ! -z "$xsuba" ] && { echo "${space}xsub=\"$xsuba\"" >> $run; echo sbatch options: $xsuba; } || echo "${space}xsub=\"\$xsubd\"" >> $run 
+	    
+	    
 	    [ -z "$ref" ] || ref=.$ref
         
         echo "$t" >> $run
@@ -131,7 +146,7 @@ for t in `cat $1`; do
         fi
                       
         #echo "debug: ${cloper[$step]} ${cloper[$de]} .$sameloop. " >> $run
-        [ "$4" == "useTmp" ] && useTmp="reference: $ref"
+        [ "$3" == "useTmp" ] && useTmp="reference: $ref"
 	    echo -e "${space}echo; echo step: $step, depends on: $de, job name: $name, flag: $name$loper $useTmp " >> $run
         echo "${space}flag=${step}.$de.${name}${loper}"  >> $run
         echo "${space}flag=\${flag//\//_}" >> $run   # replace path / to _ 
@@ -155,14 +170,14 @@ for t in `cat $1`; do
         echo "${space}[ -z \"\${deps// /}\" ] && deps=null || deps=\${deps// /.}" >> $run
 
         #echo "echo command is: bsubRun \$xsub -flag \$deps \$cwd \$flag \"$cmd\" " >> $run
-        [[ "$4" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPath $ref" >> $run && cmd="rsyncToTmp ${ref//./ $}; $cmd"
+        [[ "$3" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPath $ref" >> $run && cmd="rsyncToTmp ${ref//./ $}; $cmd"
 
         cmd="{ $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
         
         # echo exit >> $run   # only test for one job
-        echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\")"   >> $run
+        [[ "$4" == run ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\")"   >> $run || echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\" test)"   >> $run
        
-        [[ "$4" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPathBack $ref" >> $run 
+        [[ "$3" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPathBack $ref" >> $run 
         #echo "echo id is: \$id ">> $run
         
         echo "${space}if [ -z \"\$id\" ]; then"  >> $run
@@ -217,8 +232,8 @@ echo "echo all submitted jobs: " >> $run
 echo "cat flag/alljobs.jid" >> $run 
 echo "echo ---------------------------------------------------------" >> $run
 
-chmod a+x $run 
-
 echo "[ -f flag/alljobs.jid.first ] || cp flag/alljobs.jid flag/alljobs.jid.first " >> $run 
 
-echo all done
+echo $run ${1#* } is ready to run. Starting to run ...
+
+eval /bin/bash $run "${1#* }"
