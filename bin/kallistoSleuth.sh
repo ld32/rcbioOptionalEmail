@@ -1,5 +1,5 @@
 #!/bin/sh
-usage() { echo -e "\nUsage : `basename $0` <-i transcriptome index (required: currently we have: RCh38, GRCm38, BDGP6 and GRCz10)>\n"; exit 1;} 
+usage() { echo -e "\nUsage : `basename $0` <-i transcriptome index (required: currently we have: GRCh38, GRCm38, BDGP6 and GRCz10)>\n"; exit 1;} 
 
 while getopts ":i:" o; do
     case "${o}" in
@@ -83,7 +83,7 @@ for group in `ls -d group*/|sed 's|[/]||g'`; do
         
         [ -z $r2 ] && reads="-single $reads"
         
-        #@1,0,kallisto2,,sbatch -p short --mem 32G -n 4 -t 12:0:0 
+        #@1,0,kallisto2,,sbatch -p short --mem 32G -n 4 -t 2:0:0 
         rm -r kallistoOut/$group$sample 2>/dev/null ; kallisto quant -o kallistoOut/$group$sample -b 100 -t 4 -i $index $reads
           
         
