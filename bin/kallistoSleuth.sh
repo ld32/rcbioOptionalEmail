@@ -1,11 +1,14 @@
 #!/bin/sh
-usage() { echo -e "\nUsage : `basename $0` <-i transcriptome index (required: currently we have: GRCh38, GRCm38, BDGP6 and GRCz10)>\n"; exit 1;} 
+usage() { echo -e "\nUsage : `basename $0` <-i transcriptome index (required: currently we have: GRCh38, GRCm38, BDGP6 and GRCz10)> [ -l fragmentLength, optional. Only need this for single end reads]\n"; exit 1;} 
 
-while getopts ":i:" o; do
+while getopts ":i:l:" o; do
     case "${o}" in
         i)
             i=${OPTARG}
             ;;
+
+        l)  l=${OPTARG}
+	    ;;
         *)
             usage
             ;;
@@ -72,16 +75,19 @@ for group in `ls -d group*/|sed 's|[/]||g'`; do
             
             readgroup=${r1%_*}
             echo working on readgroup: $readgroup
-            ext=${r1##*_}; ext=${ext/1/2}
-            r2=${readgroup}_$ext
-                                  
-            [[ -f $group/$sample/$r2 ]] && r2="$group/$sample/$r2" || { echo -e "\n\n!!!Warning: read2 file '$r2' not exist, ignore this warning if you are working with single-end data\n\n"; r2=""; }
-            reads="$reads  $group/$sample/$r1 $r2"     
+            
+            if [  -z "$l" ] ; then
+                ext=${r1##*_}; ext=${ext/1/2}
+                r2=${readgroup}_$ext
+                reads="$reads  $group/$sample/$r1 $r2"
+            else                       
+                reads="$reads  $group/$sample/$r1"     
+            fi
         done
         
         echo -e "$sample\t$group\tkallistoOut/$group$sample" >> sample.lst 
         
-        [ -z $r2 ] && reads="-single $reads"
+        [ -z "$l" ] ||  reads="--single $reads -l $l"
         
         #@1,0,kallisto2,,sbatch -p short --mem 32G -n 4 -t 2:0:0 
         rm -r kallistoOut/$group$sample 2>/dev/null ; kallisto quant -o kallistoOut/$group$sample -b 100 -t 4 -i $index $reads
