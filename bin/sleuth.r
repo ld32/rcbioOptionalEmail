@@ -12,6 +12,8 @@ sp=args[1]
 
 #biocLite("biomaRt", suppressUpdates=TRUE)
 
+.libPaths("/n/shared_db/misc/rcbio/rlib/3.4.1") 
+
 library("sleuth")
 
 sample=read.table("sample.lst", header = TRUE, stringsAsFactors=FALSE)

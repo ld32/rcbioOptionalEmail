@@ -97,4 +97,4 @@ for group in `ls -d group*/|sed 's|[/]||g'`; do
 done
 
 #@2,1,sleuth 
-export R_LIBS_USER=/n/shared_db/misc/rcbio/rlib/3.4.1; Rscript sleuth.r $s
+Rscript sleuth.r $s
