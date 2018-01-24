@@ -69,7 +69,7 @@ if [ -f $wp/$flag.success ] && [[ "$te"  != test ]]; then
         
         # remove downstream jobs' .success flag
         findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2 
-        #echo command is: findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2 
+        #echo command is: findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2
         echo Will re-run the down stream steps even if they are done before. >&2 
     else
         exit; 

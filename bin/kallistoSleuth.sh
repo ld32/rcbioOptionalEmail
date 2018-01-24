@@ -79,7 +79,7 @@ for group in `ls -d group*/|sed 's|[/]||g'`; do
             if [  -z "$l" ] ; then
                 ext=${r1##*_}; ext=${ext/1/2}
                 r2=${readgroup}_$ext
-                reads="$reads  $group/$sample/$r1 $r2"
+                reads="$reads  $group/$sample/$r1 $group/$sample/$r2"
             else                       
                 reads="$reads  $group/$sample/$r1"     
             fi

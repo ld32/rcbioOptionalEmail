@@ -210,11 +210,11 @@ for t in `cat ${1%% *}`; do
         echo "$t" >> $run
         #findjob=""
         if [[ "$i" == done* ]]; then
-            echo find loopend: $i
+            echo find loop end: $i
             #space=${space%    }
             loper=${loper%.\$*}
         elif [[ "$i" == for* ]]; then
-            echo; echo find loopStart: $i
+            echo; echo find loop start: $i
             a=`echo $i | xargs`  # remove leading space and tailing space
             a=${a#* }; a=${a%% *}
             #echo a is .$a.
@@ -232,7 +232,7 @@ echo "echo all submitted jobs: " >> $run
 echo "cat flag/alljobs.jid" >> $run 
 echo "echo ---------------------------------------------------------" >> $run
 
-echo "[ -f flag/alljobs.jid.first ] || cp flag/alljobs.jid flag/alljobs.jid.first " >> $run 
+[[ "$4" == run ]] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
 
 echo $run ${1#* } is ready to run. Starting to run ...
 

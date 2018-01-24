@@ -16,6 +16,7 @@ stat=`tail -n 1 $flag.out`
 if [ "${actualsize% *}" -ge "$minimumsize" ]; then
    toSend=`echo Job script content:; cat $flag.sh`
    toSend="$s\n$toSend\nOutput is too big for email. Please find output in: $flag.out"  
+   toSend="$toSend\n...\n`tail -n 6 $flag.out`"
 else
    toSend=`echo Job script content:; cat $flag.sh; echo Job output:; cat $flag.out`
    toSend="$s\n$toSend"
