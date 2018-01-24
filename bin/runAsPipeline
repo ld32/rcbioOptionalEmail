@@ -232,7 +232,7 @@ echo "echo all submitted jobs: " >> $run
 echo "cat flag/alljobs.jid" >> $run 
 echo "echo ---------------------------------------------------------" >> $run
 
-[[ "$4" == run ]] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
+[[ "$4" == run ]] && [ ! -f flag/alljobs.jid.first ] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
 
 echo $run ${1#* } is ready to run. Starting to run ...
 

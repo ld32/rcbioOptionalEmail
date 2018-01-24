@@ -17,9 +17,7 @@ done
 
 [ -z "$i" ] && usage
 
-module purge
-
-module load rcbio/1.0 gcc/6.2.0 kallisto/0.43.1  R/3.4.1 
+module load gcc/6.2.0 kallisto/0.43.1  R/3.4.1 
 
 SHARED_DATABASES=/n/shared_db
 
@@ -41,7 +39,7 @@ else
     ;;
     
     "GRCz10")index="$SHARED_DATABASES/GRCz10/91/kallisto/0.43.1/GRCz10"
-            s="drerio_gene_ensembl"
+            s=drerio_gene_ensembl
     ;;
   
   
