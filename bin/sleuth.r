@@ -33,6 +33,8 @@ if (sp != "") {
 sout=sleuth_fit(sout)
 
 sout=sleuth_wt(sout, 'groupgroup2')
+# see above another test you can use is sleuth_lrt. Here is the discussion on which one you should choose
+# https://gist.github.com/jaquol/03f41f57dc6b0eacef101e9920f24d78
 
 results=sleuth_results(sout, 'groupgroup2')
 
