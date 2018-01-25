@@ -228,9 +228,10 @@ done
 # go back to the original folder
 echo "cd \$cwd/.." >> $run
 
-echo "echo all submitted jobs: " >> $run
+echo "echo; echo All submitted jobs: " >> $run
 echo "cat flag/alljobs.jid" >> $run 
 echo "echo ---------------------------------------------------------" >> $run
+[[ "$4" == run ]] || echo "echo Note: This is just a test run, so no job is actually submitted. In real run it should submit jobs and report as above." >> $run
 
 [[ "$4" == run ]] && [ ! -f flag/alljobs.jid.first ] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
 

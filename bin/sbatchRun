@@ -91,7 +91,7 @@ cmd="$xsub --nodes=1 $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.
 echo -e "\n#sbatch command:\n#$cmd" >> $wp/$flag.sh
 
 if [[ "$te"  == test ]]; then 
-     output="Submitted batch job fakeJobID123"  
+    output="This is testing, so no job is submitted. In real run it should submit job such as: Submitted batch job 123"  
 else 
     [[ "$deps" != *&&* ]] && output="$($cmd)" || output="$(eval $cmd)"
 fi 
