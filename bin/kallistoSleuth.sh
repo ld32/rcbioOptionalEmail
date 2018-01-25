@@ -1,21 +1,30 @@
 #!/bin/sh
-usage() { echo -e "\nUsage : `basename $0` <-i transcriptome index (required: currently we have: GRCh38, GRCm38, BDGP6 and GRCz10)> [ -l fragmentLength, optional. Only need this for single end reads]\n"; exit 1;} 
+usage() { echo -e "\nUsage : `basename $0` <-i transcriptome index (required: currently we have: GRCh38, GRCm38, BDGP6 and GRCz10)> [ -l fragmentLength, optional. Only need this for single end reads] [-s Estimated standard deviation of fragment length, optional. Only need this for single send reads]\n"; exit 1;} 
 
-while getopts ":i:l:" o; do
+while getopts ":i:l:s:" o; do
     case "${o}" in
         i)
             i=${OPTARG}
             ;;
 
         l)  l=${OPTARG}
-	    ;;
+	        ;;
+	        
+	    s)  s=${OPTARG}
+	        ;;
+
         *)
             usage
             ;;
+
     esac
 done
 
 [ -z "$i" ] && usage
+
+[ ! -z "$l" ] && [ -z "$s" ] && usage
+
+[ -z "$l" ] && [ ! -z "$s" ] && usage
 
 module load gcc/6.2.0 kallisto/0.43.1  R/3.4.1 
 
@@ -27,19 +36,19 @@ if [ -f "${i}" ]; then
 else 
   case "$i" in
     "GRCh38")index="$SHARED_DATABASES/GRCh38/91/kallisto/0.43.1/GRCh38"
-            s=hsapiens_gene_ensembl
+            sp=hsapiens_gene_ensembl
     ;;
     
     "GRCm38")index="$SHARED_DATABASES/GRCm38/91/kallisto/0.43.1/GRCm38"
-            s=mmusculus_gene_ensembl
+            sp=mmusculus_gene_ensembl
     ;;
     
     "BDGP6")index="$SHARED_DATABASES/BDGP6/91/kallisto/0.43.1/BDGP6"
-            s=dmelanogaster_gene_ensembl
+            sp=dmelanogaster_gene_ensembl
     ;;
     
     "GRCz10")index="$SHARED_DATABASES/GRCz10/91/kallisto/0.43.1/GRCz10"
-            s=drerio_gene_ensembl
+            sp=drerio_gene_ensembl
     ;;
   
   
@@ -54,11 +63,9 @@ echo -e "sample\tgroup\tpath" > sample.lst
 
 mkdir -p kallistoOut
 
-#loopStart,group
 for group in `ls -d group*/|sed 's|[/]||g'`; do
   
     echo working on group:  $group
-    #loopStart,sample
     for sample in `ls -d $group/*/ | xargs -n 1 basename`; do
          
         echo working on sample: $sample
@@ -85,16 +92,13 @@ for group in `ls -d group*/|sed 's|[/]||g'`; do
         
         echo -e "$sample\t$group\tkallistoOut/$group$sample" >> sample.lst 
         
-        [ -z "$l" ] ||  reads="--single $reads -l $l"
+        [ -z "$l" ] ||  reads="--single $reads -l $l -s $s"
         
         #@1,0,kallisto2,,sbatch -p short --mem 32G -n 4 -t 2:0:0 
         rm -r kallistoOut/$group$sample 2>/dev/null ; kallisto quant -o kallistoOut/$group$sample -b 100 -t 4 -i $index $reads
           
-        
-    #loopEnd 
-    done 
-#loopEnd     
+    done     
 done
 
-#@2,1,sleuth 
-Rscript sleuth.r $s
+#@2,1,sleuth,,sbatch -p short --mem 10G -t 2:0:0
+Rscript sleuth.r $sp
