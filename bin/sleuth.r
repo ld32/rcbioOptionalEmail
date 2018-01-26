@@ -32,11 +32,14 @@ if (sp != "") {
     
 sout=sleuth_fit(sout)
 
-sout=sleuth_wt(sout, 'groupgroup2')
-# see above another test you can use is sleuth_lrt. Here is the discussion on which one you should choose
+sout=sleuth_fit(sout, ~1, 'reduced')
+
+sout=sleuth_lrt(sout, 'reduced', 'full')
+
+# see above another test you can use is sleuth_wt. Here is the discussion on which one you should choose
 # https://gist.github.com/jaquol/03f41f57dc6b0eacef101e9920f24d78
 
-results=sleuth_results(sout, 'groupgroup2')
+results=sleuth_results(sout, 'reduced:full', test_type = 'lrt')
 
 results_ordered=results[order(results$qval),]
 
