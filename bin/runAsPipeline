@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "Usage: \n${0##*/} <bash_script_v2.sh [parameter1] [parameter2] ...> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp> [run, default is empty to test the pipeline, which does not submit jobs, only create fake job id, 123.]"; exit 1; } 
+usage() { echo -e "Usage: \n${0##*/} <bashScriptV2.sh [parameter1] [parameter2] ...> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp> [run, default is empty to test the pipeline, which does not submit jobs, only create fake job id, 123.]"; exit 1; } 
 
 [ -e ${1%% *} ] || { echo bash script file not exist: ${1%% *} Exiting...; usage; }
 
@@ -209,14 +209,14 @@ for t in `cat ${1%% *}`; do
     else
         echo "$t" >> $run
         #findjob=""
-        if [[ "$i" == \#loopEnd* ]]; then
-            echo find loopend: $i
+        if [[ "$i" == done* ]]; then
+            echo find loop end: $i
             #space=${space%    }
             loper=${loper%.\$*}
-        elif [[ "$i" == \#loopStart* ]]; then
-            echo; echo find loopStart: $i
+        elif [[ "$i" == for* ]]; then
+            echo; echo find loop start: $i
             a=`echo $i | xargs`  # remove leading space and tailing space
-            a=${a#*,}
+            a=${a#* }; a=${a%% *}
             #echo a is .$a.
             loper="$loper.\$$a"
             #echo new loper: $loper
@@ -228,11 +228,12 @@ done
 # go back to the original folder
 echo "cd \$cwd/.." >> $run
 
-echo "echo all submitted jobs: " >> $run
+echo "echo; echo All submitted jobs: " >> $run
 echo "cat flag/alljobs.jid" >> $run 
 echo "echo ---------------------------------------------------------" >> $run
+[[ "$4" == run ]] || echo "echo Note: This is just a test run, so no job is actually submitted. In real run it should submit jobs and report as above." >> $run
 
-echo "[ -f flag/alljobs.jid.first ] || cp flag/alljobs.jid flag/alljobs.jid.first " >> $run 
+[[ "$4" == run ]] && [ ! -f flag/alljobs.jid.first ] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
 
 echo $run ${1#* } is ready to run. Starting to run ...
 
