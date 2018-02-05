@@ -78,7 +78,7 @@ fi
  
 rm -f $wp/$flag.start $wp/$flag.failed $wp/$flag.killed  2>/dev/null 
 
-echo -e "#!/bin/bash\n#Commands:\ntouch $wp/$flag.start\n$cm\nsleep 5\nexport SLURM_TIME_FORMAT=relative\necho Job done. Summary:\nsacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%30,CPUTime,MaxRSS,MaxVMSize,NodeList --units=M -j \$SLURM_JOBID\nsendJobFinishEmail.sh  $wp/$flag\n[ -f $wp/$flag.failed ] && exit 1 || exit 0" > $wp/$flag.sh
+echo -e "#!/bin/bash\n#Commands:\ntouch $wp/$flag.start\n$cm\nsleep 5\nexport SLURM_TIME_FORMAT=relative\necho Job done. Summary:\nsacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%30,CPUTime,MaxRSS,MaxVMSize,NodeList%30 --units=M -j \$SLURM_JOBID\nsendJobFinishEmail.sh  $wp/$flag\n[ -f $wp/$flag.failed ] && exit 1 || exit 0" > $wp/$flag.sh
 
 # if this job fails, kill all the jobs which depends on this one
 # remove the line if you don't need to kill jobs automatically
