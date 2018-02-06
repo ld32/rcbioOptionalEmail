@@ -72,10 +72,10 @@ for group in `ls -v -d group*/|sed 's|[/]||g'`; do
             readgroup=${readgroup%_*}
             r2=${r1%_*}_2${r1##*_1}
             echo working on readgroup: $readgroup
-            [[ -f $r2 ]] || { echo -e "\n\n!!!Warning: read2 file '$r2' not exist, ignore this warning if you are working with single-end data\n\n"; r2=""; }
+            [[ -f $r2 ]] || { echo -e "\n!!!Error: read2 file '$r2' not exist, ignore this warning if you are working with single-end data\n\n"; r2=""; exit 1; }
 
             #@1,0,bwa,index,sbatch -n 4 -p short -t 12:0:0 --mem 40G 
-            bwa mem -M -t 4 -R "@RG\tID:$sample.$readgroupz\tPL:Illumina\tSM:$sample" $index $r1 $r2 > $pwdhere/bwaOut/$group$sample/$readgroup.sam
+            bwa mem -M -t 4 $index $r1 $r2 > $pwdhere/bwaOut/$group$sample/$readgroup.sam
 
             inputsams="$inputsams INPUT=$pwdhere/bwaOut/$group$sample/$readgroup.sam"
 
