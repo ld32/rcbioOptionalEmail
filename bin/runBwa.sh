@@ -14,7 +14,7 @@ while getopts ":r:" o; do
     esac
 done
 
-module load bwa/0.7.8 picard/2.8.0 samtools/0.1.19
+module load bwa/0.7.15 picard/2.8.0 samtools/1.3.1
 
 SHARED_DATABASES=/n/shared_db/igenome/03032016/
 
