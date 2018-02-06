@@ -6,6 +6,8 @@ usage() { echo -e "Usage: \n${0##*/} <bashScriptV2.sh [parameter1] [parameter2] 
 
 [[ "$2" != sbatch* ]] && usage
 
+core=${2#*-n }; core=${core%% *}; [ "$core" -eq "$core" ] || { echo core is not number; usage; }
+
 [[ "$3" == useTmp ]] || [[ "$3" == noTmp ]] || usage 
 
 [[ -z "$4"  ]] || [[ "$4" == run ]] || usage  
