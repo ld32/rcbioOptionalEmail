@@ -16,7 +16,7 @@ done
 
 module load bwa/0.7.8 picard/2.8.0 samtools/0.1.19
 
-SHARED_DATABASES=/n/shared_db/misc/ignome/03032016/
+SHARED_DATABASES=/n/shared_db/ignome/03032016/
 
 if [ -z "${r}" ]; then
     if [ ! -z "$b" ]; then 
