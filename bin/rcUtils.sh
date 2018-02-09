@@ -23,7 +23,7 @@ rsyncToTmp() {
       trap 'rm -f "$lockFile"; exit $?' INT TERM EXIT
       mkdir -p ${v%/*}
       rsync -aL ${v#/tmp/rcbio}* ${v%/*} 
-      chmod -R a+rwX ${v%/*}
+      chmod -R a+rwx ${v%/*}
       find  ${v%/*} -type f -exec chmod -x '{}' \;
       echo Copying is done for $v
       rm -f "$lockFile"
