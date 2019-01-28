@@ -9,9 +9,10 @@ path=$1
            # kill downsteam jobs                          or  remove .successflag 
 [ -z "$3" ] && { kill=""; text=`cat $1/alljobs.jid`; }  || { kill=kill; text=`cat $1/alljobs.jid.first`; }
 
-[ -f $path/alljobs.jid ] || { echo -e "job id file $path/alljobs.jid does not exist\n$Usage" >> $path/$2.out; exit; }
+#[ -f $path/alljobs.jid ] || { echo -e "job id file $path/alljobs.jid does not exist\n$Usage" >> $path/$2.out; exit; }
 
-[ -f $path/$2.success ] && echo kill jobs should not run, because job has finished successfully. >> $path/$2.out && exit 
+# slurm does not need this because if upperstream jobs fail, downsteam will be automatically killed
+#[ -f $path/$2.success ] && echo kill jobs should not run, because job has finished successfully. >> $path/$2.out && exit 
       
 job=$2
 
