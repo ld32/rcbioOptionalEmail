@@ -13,16 +13,22 @@ while getopts ":q:n:W:r:b:f:g:t:" o; do
     esac
 done
 
-#module load dev/java/jdk1.7 seq/rsem/1.2.25 seq/bowtie/1.1.1  seq/igvtools/2.3.57 
 module load gcc/6.2.0 rsem/1.3.0 bowtie2/2.2.9  samtools/1.3.1 igvtools/2.3.88 R/3.4.1 
 
+echo Current loaded modules: `module list`
+
+# set up bowtie2 index paths 
+path=`which sbatchRun`
+source ${path%\/bin\/sbatchRun}/config/config.txt
+
 case "$r" in
-    "mm10")index="$SHARED_DATABASES/rsem_indexes_bowtie2/mm10"
+    "mm10")index="$rsemBowtie2mm10"
     ;;
-    "hg19") index="$SHARED_DATABASES/rsem_indexes_bowtie2/hg19" 
+  
+    "hg19") index="$rsemBowtie2hg19" 
     ;;
     
-    "GRCz10")index="$SHARED_DATABASES/rsem_indexes_bowtie2/GRCz10"
+    "GRCz10")index="$rsemBowtie2GRCz10"
     ;;    
 
     *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; exit
@@ -36,7 +42,7 @@ rm flag/*.jid 2>/dev/null  # job denpendency id file for each job
 mkdir -p out
 
 # go through sample groups
-for group in `ls -d -v group*`; do
+for group in `ls -v -d group*`; do
     echo working on group:  $group
     
     COUNTER=0 
