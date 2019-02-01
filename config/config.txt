@@ -1,6 +1,6 @@
 SHARED_DATABASES=/n/shared_db/igenome/03032016/
 
-# BowtieIndexes:
+# Bowtie Indexes:
 
 Bowtie2mm10="$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Sequence/Bowtie2Index/genome"
 
@@ -12,5 +12,20 @@ Bowtie2hg18="$SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Sequence/Bowtie2Index/geno
 
 Bowtie2hg19="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome"
 
-hBowtie2g38="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/Bowtie2Index/genome"
+Bowtie2g38="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/Bowtie2Index/genome"
     
+# bwa indexes:     
+
+bwamm10=$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa"
+
+bwadm3="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm3/Sequence/BWAIndex/genome.fa"
+    
+bwadm6="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm6/Sequence/BWAIndex/genome.fa"
+    
+bwahg18="$SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Sequence/BWAIndex/genome.fa"
+    
+bwahg19="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Sequence/BWAIndex/genome.fa"
+    
+bwahg38="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/BWAIndex/genome.fa"
+
+        
