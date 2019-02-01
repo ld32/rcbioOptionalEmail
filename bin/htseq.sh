@@ -31,11 +31,11 @@ done
 
 module load gcc/6.2.0  python/2.7.12  htseq/0.9.1 samtools/0.1.19
 
-# set up bowtie2 index paths 
+echo Current loaded modules: `module list`
+
+# set up gtf file paths 
 path=`which sbatchRun`
 source ${path%\/bin\/sbatchRun}/config/config.txt
-
-echo Current loaded modules: `module list`
 
 if [ -z "${r}" ]; then
     if [ ! -z "$g" ]; then 

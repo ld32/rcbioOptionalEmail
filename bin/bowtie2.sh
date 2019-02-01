@@ -15,12 +15,12 @@ done
 
 module load bowtie2/2.2.9 samtools/0.1.19 
 
+echo Current loaded modules: `module list`
+
 # set up bowtie2 index paths 
 path=`which sbatchRun`
 source ${path%\/bin\/sbatchRun}/config/config.txt
 
-echo Current loaded modules: `module list`
- 
 if [ -z "${reference}" ]; then
     if [ ! -z "$bowtieIndex" ]; then 
         bowtie2-inspect -n ${bowtieIndex} &> /dev/null || { echo -e "Error: \ngenome bowtie2 index could not be found: $bowtieIndex"; usage; } 

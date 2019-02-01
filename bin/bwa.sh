@@ -16,11 +16,11 @@ done
 
 module load bwa/0.7.15 picard/2.8.0 samtools/1.3.1
 
+echo Current loaded modules: `module list`
+
 # set up bowtie2 index paths 
 path=`which sbatchRun`
 source ${path%\/bin\/sbatchRun}/config/config.txt
-
-echo Current loaded modules: `module list`
 
 if [ -z "${r}" ]; then
     if [ ! -z "$b" ]; then 

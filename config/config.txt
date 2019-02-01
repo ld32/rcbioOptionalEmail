@@ -42,5 +42,14 @@ gtfhg19="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
     
 gtfhg38="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf"
 
+#### kallisto/0.43.1 index 
+
+kallisto0_43_1GRCh38="/n/shared_db/GRCh38/91/kallisto/0.43.1/GRCh38"
+
+kallisto0_43_1GRCm38="/n/shared_db/GRCm38/91/kallisto/0.43.1/GRCm38"
+   
+kallisto0_43_1BDGP6="/n/shared_db/BDGP6/91/kallisto/0.43.1/BDGP6"
+    
+kallisto0_43_1GRCz10="/n/shared_db/GRCz10/91/kallisto/0.43.1/GRCz10"
     
     
