@@ -30,7 +30,12 @@ done
 [ -d $p ] || { echo Folder not exist: $p; usage; }
 
 module load gcc/6.2.0  python/2.7.12  htseq/0.9.1 samtools/0.1.19
-SHARED_DATABASES=/n/shared_db/igenome/03032016
+
+# set up bowtie2 index paths 
+path=`which sbatchRun`
+source ${path%\/bin\/sbatchRun}/config/config.txt
+
+echo Current loaded modules: `module list`
 
 if [ -z "${r}" ]; then
     if [ ! -z "$g" ]; then 
@@ -42,26 +47,27 @@ if [ -z "${r}" ]; then
 else 
   case "$r" in
      "dm3")
-       gtf=" $SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm3/Annotation/Genes/genes.gtf"
+       gtf="$gtfdm3"
     ;;
     
     "dm6")
-       gtf=" $SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm6/Annotation/Genes/genes.gtf"
+       gtf="$gtfdm6"
     ;;
    
     "mm10")
-       gtf=" $SHARED_DATABASES/Mus_musculus/UCSC/mm10/Annotation/Genes/genes.gtf"
+       gtf="$gtfmm10"
     ;;
         
     "hg18")
-       gtf=" $SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Annotation/Genes/genes.gtf"
+       gtf="$gtfhg18"
     ;;
     
     "hg19") 
-       gtf=" $SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
+       gtf="$gtfhg19"
     ;;
     
-    "hg38") gtf="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf"
+    "hg38")
+       gtf="$gtfhg38"
     ;;
      
     *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; exit
