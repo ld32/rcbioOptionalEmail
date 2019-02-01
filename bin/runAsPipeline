@@ -10,7 +10,19 @@ usage() { echo -e "Usage: \n${0##*/} <bashScriptV2.sh [parameter1] [parameter2] 
 
 [[ -z "$4"  ]] || [[ "$4" == run ]] || usage  
 
+date
+
+echo Runing: $0 $@
+
+echo module list: 
+
+module list 
+
 stamp=$(date -d "today" +"%Y%m%d%H%M")
+
+[ -d flag ] && [[ "$4" == run ]] && cp -rp flag flag.$stamp 
+
+[ -f output.log ] && [[ "$4" == run ]] && cp output.$stamp.log 
 
 mkdir -p flag
 
@@ -22,8 +34,12 @@ echo converting $1 to $run
 
 echo "#!/bin/sh" > $run  
 
-echo "echo Running \$0 \$@"  >> $run        
+echo "echo Running \$0 \$@"  >> $run   
 
+echo echo module list: >> $run 
+
+echo module list >> $run 
+     
 echo "xsubd=\"$2\"" >> $run
 
 #echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run

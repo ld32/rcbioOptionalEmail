@@ -63,7 +63,7 @@ echo -e "sample\tgroup\tpath" > sample.lst
 
 mkdir -p kallistoOut
 
-for group in `ls -d group*/|sed 's|[/]||g'`; do
+for group in `ls -v -d group*/|sed 's|[/]||g'`; do
   
     echo working on group:  $group
     for sample in `ls -d $group/*/ | xargs -n 1 basename`; do

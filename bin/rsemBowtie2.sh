@@ -36,7 +36,7 @@ rm flag/*.jid 2>/dev/null  # job denpendency id file for each job
 mkdir -p out
 
 # go through sample groups
-for group in `ls -d group*`; do
+for group in `ls -v -d group*`; do
     echo working on group:  $group
     
     COUNTER=0 

@@ -89,7 +89,7 @@ fi
 
 pwdhere=`pwd`
 
-for group in `ls -d group*`; do
+for group in `ls -v -d group*`; do
     echo working on group:  $group
    
     #loopStart,sample

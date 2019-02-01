@@ -1,12 +1,16 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use Getopt::Long;
 use Pod::Usage;
-use FindBin;
-use lib $FindBin::Bin;
-use strict;
 
+use FindBin;
+use lib $FindBin::RealBin;
 use rsem_perl_utils;
+
+use Env qw(@PATH);
+@PATH = ("$FindBin::RealBin/EBSeq", @PATH);
+
+use strict;
 
 my $ngvF = "";
 my $help = 0;
@@ -18,7 +22,6 @@ pod2usage(-verbose => 2) if ($help == 1);
 pod2usage(-msg => "Invalid number of arguments!", -exitval => 2, -verbose => 2) if (scalar(@ARGV) != 3);
 pod2usage(-msg => "ngvector file cannot be named as #! # is reserved for other purpose!", -exitval => 2, -verbose => 2) if ($ngvF eq "#");
 
-my $dir = "/n/shared_db/misc/rcbio/rlib/rsem1.3.0/"; 
 my $command = "";
 
 my @conditions = split(/,/, $ARGV[1]);
@@ -28,7 +31,7 @@ pod2usage(-msg => "At least 2 conditions are required for differential expressio
 if ($ngvF eq "") { $ngvF = "#"; }
 
 $" = " ";
-$command = $dir."EBSeq/rsem-for-ebseq-find-DE ".$dir."EBSeq $ngvF $ARGV[0] $ARGV[2] @conditions";
+$command = "rsem-for-ebseq-find-DE /n/shared_db/misc/rcbio/rlib/rsem1.3.0/EBSeq $ngvF $ARGV[0] $ARGV[2] @conditions";
 &runCommand($command)
 
 __END__
@@ -101,15 +104,15 @@ This file is only generated when there are more than 2 conditions. It gives the 
 
 =head1 EXAMPLES
 
-1) We're interested in isoform-level differential expression analysis and there are two conditions. Each condition has 5 replicates. We have already collected the data matrix as 'IsoMat' and generated ngvector as 'ngvector.ngvec':
+1) We're interested in isoform-level differential expression analysis and there are two conditions. Each condition has 5 replicates. We have already collected the data matrix as 'IsoMat.txt' and generated ngvector as 'ngvector.ngvec':
 
- rsem-run-ebseq --ngvector ngvector.ngvec IsoMat 5,5 IsoMat.results
+ rsem-run-ebseq --ngvector ngvector.ngvec IsoMat.txt 5,5 IsoMat.results
 
 The results will be in 'IsoMat.results'.
 
-2) We're interested in gene-level analysis and there are 3 conditions. The first condition has 3 replicates and the other two has 4 replicates each. The data matrix is named as 'GeneMat':
+2) We're interested in gene-level analysis and there are 3 conditions. The first condition has 3 replicates and the other two has 4 replicates each. The data matrix is named as 'GeneMat.txt':
 
- rsem-run-ebseq GeneMat 3,4,4 GeneMat.results
+ rsem-run-ebseq GeneMat.txt 3,4,4 GeneMat.results
 
 Three files, 'GeneMat.results', 'GeneMat.results.pattern', and 'GeneMat.results.condmeans', will be generated. 
 
