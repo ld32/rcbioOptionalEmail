@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 usage() { echo -e "Usage :\n${0##*/} [-r species_index (required if no -b. Such as: dm3, dm6, mm10, hg18, hg19 or hg38. Let us know if you need other references)] [-b bowtie2IndexWithPath(required if no -r, don't need this if -r is given)]"; exit 1;} 
 
 while getopts ":r:b:" o; do
@@ -11,13 +10,17 @@ while getopts ":r:b:" o; do
         b)
             bowtieIndex=${OPTARG}
             ;;
-    
     esac
 done
 
 module load bowtie2/2.2.9 samtools/0.1.19 
-SHARED_DATABASES=/n/shared_db/igenome/03032016/
 
+# set up bowtie2 index paths 
+path=`which sbatchRun`
+source ${path%\/bin\/sbatchRun}/config/config.txt
+
+echo Current loaded modules: `module list`
+ 
 if [ -z "${reference}" ]; then
     if [ ! -z "$bowtieIndex" ]; then 
         bowtie2-inspect -n ${bowtieIndex} &> /dev/null || { echo -e "Error: \ngenome bowtie2 index could not be found: $bowtieIndex"; usage; } 
@@ -28,22 +31,22 @@ if [ -z "${reference}" ]; then
     
 else 
   case "$reference" in
-    "mm10")index="$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Sequence/Bowtie2Index/genome"
+    "mm10")index="$Bowtie2mm10"
     ;;
     
-    "dm3") index="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm3/Sequence/Bowtie2Index/genome"
+    "dm3") index="$Bowtie2dm3"
     ;;
     
-    "dm6") index="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm6/Sequence/Bowtie2Index/genome"
+    "dm6") index="$Bowtie2dm6"
     ;;
     
-    "hg18") index="$SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Sequence/Bowtie2Index/genome"
+    "hg18") index="$Bowtie2hg18"
     ;;
     
-    "hg19") index="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome"
+    "hg19") index="$Bowtie2hg19"
     ;;
-     
-    "hg38") index="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/Bowtie2Index/genome"
+    
+    "hg38") index="$Bowtie2hg38"
     ;;
     
     *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; exit
@@ -58,11 +61,10 @@ mkdir -p bowtieOut
 
 for group in `ls -v -d group*/|sed 's|[/]||g'`; do
     echo working on group:  $group
-    #loopStart,sample
+    
     for sample in `ls -d $group/*/ | xargs -n 1 basename`; do
-         
         echo working on sample: $sample
-        #inputsams=""
+        
         ls  $group/$sample/*_1.fastq* 2>/dev/null || ls $group/$sample/*_1.fq*  2>/dev/null || { echo Read file not found for $sample! Please make sure the fastq files are named as xxx_1.fastq, xxx_2.fastq or xxx_1.fq, xxx_2.fq;  exit 1; }
         read1=""
         read2=""
