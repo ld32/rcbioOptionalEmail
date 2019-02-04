@@ -22,7 +22,7 @@ stamp=$(date -d "today" +"%Y%m%d%H%M")
 
 [ -d flag ] && [[ "$4" == run ]] && cp -rp flag flag.$stamp 
 
-[ -f output.log ] && [[ "$4" == run ]] && cp output.$stamp.log 
+[ -f output.log ] && [[ "$4" == run ]] && cp output.log output.$stamp.log 
 
 mkdir -p flag
 
