@@ -37,8 +37,6 @@ esac
 
 #[ -d group2 ] || { echo group2 is not found. You need at least two groups to run this pipeline; exit 1; }
 
-rm flag/*.jid 2>/dev/null  # job denpendency id file for each job
-
 mkdir -p out
 
 # go through sample groups
