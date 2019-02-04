@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage : ${0##*/} <-l readLength, required> -a <adapter.fa (required)>  [-r speciesIndex (required if no -b. Such as: tair10,dm3,mm9,mm10,hg18 or hg19. Let us know if you need other references)] [-b starIndexWithPath(required if no -r, don't need this if -r is given)] [-f genomeFastaFile(required if no -r, don't need this if -r is given)] [-g gtfFileWithPath (optional, don't need this if -r is given)] "; exit 1;} 
+usage() { echo -e "\nUsage : ${0##*/} <-l readLength, required> -a <adapter.fa (required)>  [-r speciesIndex (required if no -b. Such as: mm10,hg18 or hg19. Let us know if you need other references)] [-b starIndexWithPath(required if no -r, don't need this if -r is given)] [-f genomeFastaFile(required if no -r, don't need this if -r is given)] [-g gtfFileWithPath (optional, don't need this if -r is given)] "; exit 1;} 
 
 while getopts ":r:b:f:g:l:a:" o; do
     case "${o}" in
@@ -33,9 +33,11 @@ done
 [ -z "$l" ] && echo Please give read length && usage 
 
 module load  gcc/6.2.0 star/2.5.4a  samtools/1.3.1 picard/2.8.0  skewer/0.2.2 fastqc/0.11.5
+echo Current loaded modules: `module list`
 
-#SHARED_DATABASES=/n/shared_db
-SHARED_DATABASES=/n/groups/shared_databases
+# set up paths 
+path=`which sbatchRun`
+source ${path%\/bin\/sbatchRun}/config/config.txt
 
 # set the correct index and gene annotation file
 if [ -z "${r}" ]; then
@@ -54,29 +56,17 @@ if [ -z "${r}" ]; then
     
 else 
   case "$r" in
-    "mm10")index="$SHARED_DATABASES/igenome/Mus_musculus/UCSC/mm10/Sequence/starIndex"
-       gtf="-G $SHARED_DATABASES/igenome/Mus_musculus/UCSC/mm10/Annotation/Genes/genes.gtf"
+    "mm10")index="starmm10index"
+       gtf="-G $starmm10gtf"
     ;;
 
-    "mm9")index="$SHARED_DATABASES/igenome/Mus_musculus/UCSC/mm9/Sequence/starIndex"
-       gtf="-G $SHARED_DATABASES/igenome/Mus_musculus/UCSC/mm9/Annotation/Genes/genes.gtf" 
+    "hg18") index="$starhg18index"
+        gtf="-G $starhg18gtf"
     ;;
 
-    "hg18") index="$SHARED_DATABASES/igenome/Homo_sapiens/UCSC/hg18/Sequence/starIndex"
-        gtf="-G $SHARED_DATABASES/igenome/Homo_sapiens/UCSC/hg18/Annotation/Genes/genes.gtf"
+    "hg19") index="$starhg19index"
+        gtf="-G $starhg19gtf"
     ;;
-
-    "hg19") index="$SHARED_DATABASES/igenome/Homo_sapiens/UCSC/hg19/Sequence/starIndex"
-        gtf="-G $SHARED_DATABASES/igenome/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
-    ;;
-  
-     "dm3") index="$SHARED_DATABASES/igenome/Drosophila_melanogaster/UCSC/dm3/Sequence/starIndex"
-       gtf="-G $SHARED_DATABASES/igenome/Drosophila_melanogaster/UCSC/dm3/Annotation/Genes/genes.gtf" 
-    ;;
-    
-   # "dm3") index="$SHARED_DATABASES/dm3/star/2.5.4a"
-   #        gtf="-G $index/genes.gtf"
-   # ;;
     
     *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; exit
     ;;

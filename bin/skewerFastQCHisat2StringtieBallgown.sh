@@ -20,29 +20,30 @@ done
 [ -f $a ] || { echo Adapter sequence file is missing or not exist $a; usage; }
  
 module load gcc/6.2.0 skewer/0.2.2 fastqc/0.11.5 hisat2/2.1.0 stringtie/1.3.3b samtools/1.3.1 R/3.4.1  
+echo Current loaded modules: `module list`
 
-#python/2.7.12 #htseq/0.9.1 
-#R/3.4.1 
-
-SHARED_DATABASES=/n/groups/shared_databases/
+# set up paths 
+path=`which sbatchRun`
+source ${path%\/bin\/sbatchRun}/config/config.txt
  
 case "$r" in
-    "dm6" )index=/n/shared_db/dm6/hisat2/2.1.0/genome
-	   splice="--known-splicesite-infile /n/shared_db/dm6/hisat2/2.1.0/splicesites.txt"
-	   gtf=/n/shared_db/dm6/hisat2/2.1.0/genes.gtf
+    "dm6" ) index="hisat2dm6Index"
+            splice="--known-splicesite-infile $hisat2dm6Splice"
+            gtf="$hisat2dm6GTF"
     ;;	
-    "mm10")index="$SHARED_DATABASES/hisat2_indexes/mm10/genome"
-           splice="--known-splicesite-infile $SHARED_DATABASES/hisat2_indexes/mm10/splicesites.txt"
-            gtf=" $SHARED_DATABASES/hisat2_indexes/mm10/genes.gtf"
+    
+    "mm10") index="$hisat2mm10Index"
+            splice="--known-splicesite-infile $hisat2mm10Splice"
+            gtf="$hisat2mm10GTF"
     ;;
-    "hg19") index="$SHARED_DATABASES/hisat2_indexes/hg19/genome"
-            splice="--known-splicesite-infile $SHARED_DATABASES/hisat2_indexes/hg19/splicesites.txt"
-            gtf=" $SHARED_DATABASES/hisat2_indexes/hg19/genes.gtf"
+    "hg19") index="$hisat2hg19Index"
+            splice="--known-splicesite-infile $hisat2hg19Splice"
+            gtf="$hisat2hg19GTF"
     ;;
     
-    "GRCz10") index="$SHARED_DATABASES/hisat2_indexes/GRCz10/genome"
-            splice="--known-splicesite-infile $SHARED_DATABASES/hisat2_indexes/GRCz10/splicesites.txt"
-            gtf=" $SHARED_DATABASES/hisat2_indexes/GRCz10/genes.gtf"
+    "GRCz10") index="$hisat2GRCz10Index"
+            splice="--known-splicesite-infile $hisat2GRCz10Splice"
+            gtf="$hisat2GRCz10GTF"
     ;;
     
     *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; usage
