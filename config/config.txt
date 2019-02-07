@@ -6,7 +6,7 @@ Bowtie2dm3="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm3/Sequence/Bowtie2I
 Bowtie2dm6="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm6/Sequence/Bowtie2Index/genome"
 Bowtie2hg18="$SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Sequence/Bowtie2Index/genome"
 Bowtie2hg19="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome"
-Bowtie2g38="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/Bowtie2Index/genome"
+Bowtie2hg38="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/Bowtie2Index/genome"
     
 #### bwa indexes:     
 bwamm10=$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa"
