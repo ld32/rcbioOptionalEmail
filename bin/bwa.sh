@@ -36,16 +36,16 @@ else
     "dm3") index="$bwadm3"
     ;;
     
-    "dm6") index="bwadm6"
+    "dm6") index="$bwadm6"
     ;;
     
-    "hg18") index="bwahg18"
+    "hg18") index="$bwahg18"
     ;;
     
-    "hg19") index="bwahg19"
+    "hg19") index="$bwahg19"
     ;;
      
-    "hg38") index="bwahg38"
+    "hg38") index="$bwahg38"
     ;;
     
     *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; exit

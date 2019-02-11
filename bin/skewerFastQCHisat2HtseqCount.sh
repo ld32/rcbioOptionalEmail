@@ -16,9 +16,10 @@ while getopts ":a:r:" o; do
     esac
 done
 
-[ -z $r ] && { echo Genome referenc is needed; usage; }
-[ -f $a ] || { echo Adapter sequence file is missing or not exist $a; usage; }
- 
+[ -z $r ] && { echo Genome reference is needed; usage; }
+[ -f $a ] || { echo Adapter sequence file is missing or does not exist $a; usage; }
+
+module purge 
 module load gcc/6.2.0 skewer/0.2.2 fastqc/0.11.5 hisat2/2.1.0 samtools/1.3.1   python/2.7.12 htseq/0.9.1 R/3.4.1 
 echo Current loaded modules: `module list`
 
@@ -27,7 +28,7 @@ path=`which sbatchRun`
 source ${path%\/bin\/sbatchRun}/config/config.txt
 
 case "$r" in
-    "dm6" ) index="hisat2dm6Index"
+    "dm6" ) index="$hisat2dm6Index"
             splice="--known-splicesite-infile $hisat2dm6Splice"
             gtf="$hisat2dm6GTF"
     ;;	
@@ -50,7 +51,7 @@ case "$r" in
     ;;
 esac
  
-[ -d group2 ] || { echo group2 is not found. You need at least two groups to run this pipeline; exit 1; }
+#[ -d group2 ] || { echo group2 is not found. You need at least two groups to run this pipeline; exit 1; }
 
 pwd=`pwd`
 

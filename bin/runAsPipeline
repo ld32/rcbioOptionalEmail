@@ -12,7 +12,7 @@ usage() { echo -e "Usage: \n${0##*/} <bashScriptV2.sh [parameter1] [parameter2] 
 
 date
 
-echo Runing: $0 $@
+echo Running: $0 $@
 
 echo module list: 
 

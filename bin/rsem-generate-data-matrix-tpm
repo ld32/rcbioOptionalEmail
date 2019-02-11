@@ -8,7 +8,7 @@ if (scalar(@ARGV) == 0) {
     exit(-1);
 }
 
-my $offsite = 5; # chaned from 4; # for new file formats
+my $offsite = 5; # changed from 4(count) to 5 (TPM) ; # for new file formats
 if ($ARGV[0] =~ /alleles.results$/) { $offsite = 5; }
 
 my $line;

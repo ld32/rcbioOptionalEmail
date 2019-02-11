@@ -51,7 +51,7 @@ if [ -z "${r}" ]; then
     
 else 
   case "$r" in
-    "mm10")index="starmm10index"
+    "mm10")index="$starmm10index"
        gtf="-G $starmm10gtf"
     ;;
 

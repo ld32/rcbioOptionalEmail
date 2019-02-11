@@ -24,7 +24,7 @@ whole_tx_table = texpr(bg, 'all')
 stat_results = stattest(bg, feature='transcript', meas='FPKM', covariate='group'); 
 
 trans=cbind(whole_tx_table, stat_results);  
-write.table(trans[order(trans$qval,decreasing=F),], file='transcripts.txt', col.names=NA); 
+write.table(trans[order(trans$qval,decreasing=F),], file='transcripts.txt', col.names=NA,quote=FALSE); 
 
 #top 10 transcipt
 top10=head(trans[order(trans$qval,decreasing=F),],10)
@@ -49,6 +49,6 @@ for (i in 1:10) {
 stat_results = stattest(bg, feature='gene', meas='FPKM', covariate='group'); 
 gene_expression = gexpr(bg)
 genes=cbind(gene_expression, stat_results); 
-write.table(genes[order(genes$qval,decreasing=F),], file='genes.txt', col.names=NA); 
+write.table(genes[order(genes$qval,decreasing=F),], file='genes.txt', col.names=NA,quote=FALSE); 
 
-cat("Done. Exiting from R scirpt ...\n");
+cat("Done. Exiting from R script ...\n");
