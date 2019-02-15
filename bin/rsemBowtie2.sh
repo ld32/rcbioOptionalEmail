@@ -1,8 +1,8 @@
 #!/bin/sh
 
-usage() { echo -e "Usage :\n${0##*/} <-r species_index (required, such as mm10, hg19 or GRCz10. Let us know if you need other references)>"; exit 1;} 
+usage() { echo -e "Usage :\n${0##*/} [withTPMoutput, optional] <-r species_index (required, such as mm10, hg19 or GRCz10. Let us know if you need other references)>"; exit 1;} 
 
-while getopts ":q:n:W:r:b:f:g:t:" o; do
+while getopts ":r:" o; do
     case "${o}" in
          r)
             r=${OPTARG}
@@ -89,8 +89,7 @@ for group in `ls -v -d group*`; do
 done 
 
 #@5,1,iso
-rsem-generate-data-matrix $isoresults > iso.count.matrix && rsem-run-ebseq --ngvector $index.ngvec iso.count.matrix ${counts#,} all.iso.results && rsem-control-fdr all.iso.results 0.05 final.iso.results.fdr.txt
+rsem-generate-data-matrix $isoresults > iso.count.matrix && { [[ ! "$1" == withTPMoutput ]] || rsem-generate-data-matrix-tpm  out/*isoforms.results > iso.tpm.matrix.txt; } && rsem-run-ebseq --ngvector $index.ngvec iso.count.matrix ${counts#,} all.iso.results && rsem-control-fdr all.iso.results 0.05 final.iso.results.fdr.txt
 
 #@6,1,gene
-rsem-generate-data-matrix $generesults > gene.count.matrix && rsem-run-ebseq gene.count.matrix ${counts#,} all.gene.results && rsem-control-fdr all.gene.results 0.05 final.gene.results.fdr.txt
-
+rsem-generate-data-matrix $generesults > gene.count.matrix && { [[ ! "$1" == withTPMoutput ]] ||rsem-generate-data-matrix-tpm  out/*genes.results > gene.tpm.matrix.txt; } && rsem-run-ebseq gene.count.matrix ${counts#,} all.gene.results && rsem-control-fdr all.gene.results 0.05 final.gene.results.fdr.txt
