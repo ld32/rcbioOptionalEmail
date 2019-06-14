@@ -9,7 +9,7 @@ Bowtie2hg19="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/geno
 Bowtie2hg38="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/Bowtie2Index/genome"
     
 #### bwa indexes:     
-bwamm10=$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa"
+bwamm10="$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa"
 bwadm3="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm3/Sequence/BWAIndex/genome.fa"
 bwadm6="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm6/Sequence/BWAIndex/genome.fa"
 bwahg18="$SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Sequence/BWAIndex/genome.fa"
@@ -17,7 +17,7 @@ bwahg19="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Sequence/BWAIndex/genome.fa"
 bwahg38="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/BWAIndex/genome.fa"
 
 #### gtf files:     
-gtfmm10=$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Annotation/Genes/genes.gtf"
+gtfmm10="$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Annotation/Genes/genes.gtf"
 gtfdm3="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm3/Annotation/Genes/genes.gtf"
 gtfdm6="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm6/Annotation/Genes/genes.gtf"
 gtfhg18="$SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Annotation/Genes/genes.gtf"

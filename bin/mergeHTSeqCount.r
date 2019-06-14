@@ -15,8 +15,11 @@ if(length(files)==0) {
 group=as.numeric(substr(files,6,6))
 
 .libPaths("/n/shared_db/misc/rcbio/rlib/3.4.1") 
+
 library(edgeR)
+
 y=readDGE(files, path=args[1], group=group,labels=substr(dirname(files),1, 1000))
-write.table(y$count, file="rawCount.txt", col.names=NA);
+
+write.table(y$count, file="rawCount.txt", quote=FALSE, sep="\t")
 
 cat('Done. Raw count is in file rawCount.txt\n')
