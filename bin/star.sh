@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage : ${0##*/} <-l readLength, required> [-r speciesIndex (required if no -b. Such as: mm10,hg18 or hg19. Let us know if you need other references)] [-b starIndexWithPath(required if no -r, don't need this if -r is given)] [-f genomeFastaFile(required if no -r, don't need this if -r is given)] [-g gtfFileWithPath (optional, don't need this if -r is given)] "; exit 1;} 
+usage() { echo -e "\nUsage : ${0##*/} <-l readLength, required> [-r speciesIndex (required if no -b. Such as: mm10,hg18,hg19 and hg38. Let us know if you need other references)] [-b starIndexWithPath(required if no -r, don't need this if -r is given)] [-f genomeFastaFile(required if no -r, don't need this if -r is given)] [-g gtfFileWithPath (optional, don't need this if -r is given)] "; exit 1;} 
 
 while getopts ":r:b:f:g:l:" o; do
     case "${o}" in
@@ -62,7 +62,11 @@ else
     "hg19") index="$starhg19index"
         gtf="-G $starhg19gtf"
     ;;
-    
+
+    "hg38")index="$starhg38index"
+        gtf="-G $starhg38gtf"
+    ;;
+
     *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; exit
     ;;
   esac

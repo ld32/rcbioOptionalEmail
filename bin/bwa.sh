@@ -56,7 +56,7 @@ fi
 
 [ -d group2 ] || { echo group2 is not found. You need at least two groups to run this pipeline; exit 1; }
 
-[ -f $index.ann ] || { echo BWA Index not find: $index.ann; exit 1; }
+[ -e $index.ann ] || { echo BWA Index not find: $index.ann; exit 1; }
 
 mkdir -p bwaOut
 

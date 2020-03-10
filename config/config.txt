@@ -62,7 +62,8 @@ starhg18gtf="$SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Annotation/Genes/genes.gtf
 starhg19index="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Sequence/starIndex"
 starhg19gtf="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
 
-
+starhg38index="/n/shared_db/igenome/03032016/Homo_sapiens/UCSC/hg38/Sequence/star2.5.4a"
+starhg38gtf="/n/shared_db/igenome/03032016/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf"
 
 
 
