@@ -2,7 +2,7 @@
 
 usage() { echo -e "Usage :\n${0##*/} <-p path_of_alignment, such as: bowtieOut, bwaOut or starOut, required> [-r species_index (required if no -g. Such as: dm3, dm6, mm10, hg18, hg19 or hg38. Let us know if you need other references)] [-g .gtf file with full path (required if no -r, don't need this if -r is given)] <-s strand(yes,no,reverse)>"; exit 1;}
 
-while getopts ":p:r:g:" o; do
+while getopts ":p:r:s:g:" o; do
     case "${o}" in
         r)
             r=${OPTARG}
@@ -15,8 +15,7 @@ while getopts ":p:r:g:" o; do
             ;;
         s)
             s=${OPTARG}
-            ;;
-        
+            ;; 
         *)
             usage
             ;;
