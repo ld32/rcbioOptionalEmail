@@ -1,8 +1,8 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage : $0 <-r species_index -a <adapter.fa> (required. Such as: dm6, GRCz10, mm10 or hg19. Let us know if you need other references)> "; exit 1;} 
+usage() { echo -e "\nUsage : $0 <-r species_index -a <adapter.fa> (required. Such as: dm6, GRCz10, mm10 or hg19. Let us know if you need other references)> <-s strand(yes,no,reverse)>"; exit 1;} 
 
-while getopts ":a:r:" o; do
+while getopts ":a:r:s:" o; do
     case "${o}" in
         r)
             r=${OPTARG}
@@ -10,6 +10,8 @@ while getopts ":a:r:" o; do
         a)
             a=${OPTARG}
             ;;    
+        s)  s=${OPTARG 
+            ;;   
         *)
             usage
             ;;
@@ -18,6 +20,7 @@ done
 
 [ -z $r ] && { echo Genome reference is needed; usage; }
 [ -f $a ] || { echo Adapter sequence file is missing or does not exist $a; usage; }
+[ -z "$s" ] && { echo Please provide the strand for option -s;  usage; }
 
 module purge 
 module load gcc/6.2.0 skewer/0.2.2 fastqc/0.11.5 hisat2/2.1.0 samtools/1.3.1   python/2.7.12 htseq/0.9.1 R/3.4.1 
@@ -94,7 +97,7 @@ for group in `ls -v -d group*/|sed 's|[/]||g'`; do
         out=hisat/$group.$sample; mkdir -p $out htseq 
         
         #@3,1,hisatCount,,sbatch -n 4 -p short -t 12:0:0 --mem 40G
-        cd $out; rm aligns.sorted.bam.tmp* 2>/dev/null; hisat2 $index $reads --phred33 --mm -p 4 --dta  $splice | samtools view -Suh -f 1 - |  samtools sort - -n -o aligns.sorted.bam && htseq-count -s no -f bam aligns.sorted.bam $gtf > $pwd/htseq/$group.$sample.read.count.txt; cd -
+        cd $out; rm aligns.sorted.bam.tmp* 2>/dev/null; hisat2 $index $reads --phred33 --mm -p 4 --dta  $splice | samtools view -Suh -f 1 - |  samtools sort - -n -o aligns.sorted.bam && htseq-count -s $s -f bam aligns.sorted.bam $gtf > $pwd/htseq/$group.$sample.read.count.txt; cd -
                  
 
         #cd $out; hisat2 $index $reads --phred33 --mm -p 4 --dta  $splice 2>hisat2.log | samtools view -Suh -f 1 - |  samtools sort - -n -o aligns.sorted.bam; htseq-count -s no -f bam aligns.sorted.bam $gtf > $pwd/htseq/$group.$sample.read.count.txt; cd -            
@@ -103,7 +106,7 @@ for group in `ls -v -d group*/|sed 's|[/]||g'`; do
         #mkdir -p bowtieOut/$group$sample;  bowtie2  $p  -p $n -x $index -1 ${read1#,} -2 ${read2#,} | samtools view -bS - > bowtieOut/$group$sample/accepted_hits.bam
         
         # old htseq command 
-        #samtools view -bf 1 $i > $i.pe.bam && samtools sort -n $i.pe.bam $i.sorted && htseq-count -s no -f bam $i.sorted.bam $gtf > $i.read.count.txt"
+        #samtools view -bf 1 $i > $i.pe.bam && samtools sort -n $i.pe.bam $i.sorted && htseq-count -s $s -f bam $i.sorted.bam $gtf > $i.read.count.txt"
         
         #exit  
     done 
