@@ -75,7 +75,7 @@ else
   [ -f $fa ] || { echo genome fasta file not exist: $fa; usage; } 
 fi
 
-[ -d group2 ] || { echo group2 is not found. You need at least two groups to run this pipeline; exit 1; }
+#[ -d group2 ] || { echo group2 is not found. You need at least two groups to run this pipeline; exit 1; }
 
 pwdhere=`pwd`
 
