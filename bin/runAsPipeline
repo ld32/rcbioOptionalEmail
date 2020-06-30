@@ -10,7 +10,19 @@ usage() { echo -e "Usage: \n${0##*/} <bashScriptV2.sh [parameter1] [parameter2] 
 
 [[ -z "$4"  ]] || [[ "$4" == run ]] || usage  
 
+date
+
+echo Running: $0 $@
+
+echo module list: 
+
+module list 
+
 stamp=$(date -d "today" +"%Y%m%d%H%M")
+
+[ -d flag ] && [[ "$4" == run ]] && cp -rp flag flag.$stamp 
+
+[ -f output.log ] && [[ "$4" == run ]] && cp output.log output.$stamp.log 
 
 mkdir -p flag
 
@@ -22,8 +34,12 @@ echo converting $1 to $run
 
 echo "#!/bin/sh" > $run  
 
-echo "echo Running \$0 \$@"  >> $run        
+echo "echo Running \$0 \$@"  >> $run   
 
+echo echo module list: >> $run 
+
+echo module list >> $run 
+     
 echo "xsubd=\"$2\"" >> $run
 
 #echo "stamp=\$(date -d \"today\" +\"%Y%m%d%H%M\")" >> $run
@@ -173,7 +189,7 @@ for t in `cat ${1%% *}`; do
         cmd="{ $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
         
         # echo exit >> $run   # only test for one job
-        [[ "$4" == run ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\")"   >> $run || echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\" test)"   >> $run
+        [[ "$4" == run ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run || echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\" test)"   >> $run
        
         [[ "$3" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPathBack $ref" >> $run 
         #echo "echo id is: \$id ">> $run

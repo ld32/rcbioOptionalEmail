@@ -15,8 +15,3 @@ done
 # step3 merge          
 cat John.txt Mike.txt Nick.txt Julia.txt > all.txt
 
-exit
-
-# command to create testing data
-# echo -e "John Paul\nMike Smith\nNick Will\nJulia Johnson\nTom Jones"  >> universityA.txt
-# echo -e "John Paul\nMike Smith\nNick Will\nJulia Johnson\nTom Jones"  >> universityB.txt

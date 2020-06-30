@@ -16,7 +16,11 @@ done
 
 module load bwa/0.7.15 picard/2.8.0 samtools/1.3.1
 
-SHARED_DATABASES=/n/shared_db/igenome/03032016/
+echo Current loaded modules: `module list`
+
+# set up bowtie2 index paths 
+path=`which sbatchRun`
+source ${path%\/bin\/sbatchRun}/config/config.txt
 
 if [ -z "${r}" ]; then
     if [ ! -z "$b" ]; then 
@@ -26,22 +30,22 @@ if [ -z "${r}" ]; then
     fi
 else 
   case "$r" in
-    "mm10")index="$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa"
+    "mm10")index="$bwamm10"
     ;;
     
-    "dm3") index="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm3/Sequence/BWAIndex/genome.fa"
+    "dm3") index="$bwadm3"
     ;;
     
-    "dm6") index="$SHARED_DATABASES/Drosophila_melanogaster/UCSC/dm6/Sequence/BWAIndex/genome.fa"
+    "dm6") index="$bwadm6"
     ;;
     
-    "hg18") index="$SHARED_DATABASES/Homo_sapiens/UCSC/hg18/Sequence/BWAIndex/genome.fa"
+    "hg18") index="$bwahg18"
     ;;
     
-    "hg19") index="$SHARED_DATABASES/Homo_sapiens/UCSC/hg19/Sequence/BWAIndex/genome.fa"
+    "hg19") index="$bwahg19"
     ;;
      
-    "hg38") index="$SHARED_DATABASES/Homo_sapiens/UCSC/hg38/Sequence/BWAIndex/genome.fa"
+    "hg38") index="$bwahg38"
     ;;
     
     *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; exit
@@ -52,7 +56,7 @@ fi
 
 [ -d group2 ] || { echo group2 is not found. You need at least two groups to run this pipeline; exit 1; }
 
-[ -f $index.ann ] || { echo BWA Index not find: $index.ann; exit 1; }
+[ -e $index.ann ] || { echo BWA Index not find: $index.ann; exit 1; }
 
 mkdir -p bwaOut
 
