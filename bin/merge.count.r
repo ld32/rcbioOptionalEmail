@@ -20,7 +20,7 @@ if(length(files)==0) {
 group=as.numeric(substr(files,6,6))
 
 library(edgeR)
-y=readDGE(files, path=args[1], group=group,labels=files)
+y=readDGE(files, path=args[1], group=group,labels=files,header=FALSE)
 write.table(y$count, file="rawCount.txt", col.names=NA, quote=FALSE);
 
 cat('Done. Raw count is in file rawCount.txt\n')
