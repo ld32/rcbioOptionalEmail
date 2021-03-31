@@ -52,6 +52,10 @@ hisat2GRCz10Index="/n/shared_db/GRCz10/hisat2/2.1.0/genome"
 hisat2GRCz10Splice="/n/shared_db/GRCz10/hisat2/2.1.0/splicesites.txt"
 hisat2GRCz10GTF="/n/shared_db/GRCz10/hisat2/2.1.0/genes.gtf"
 
+hisat2GRCz11Index="/n/shared_db/GRCz11/hisat2/2.1.0/genome"
+hisat2GRCz11Splice="/n/shared_db/GRCz11/hisat2/2.1.0/splicesites.txt"
+hisat2GRCz11GTF="/n/shared_db/GRCz11/hisat2/2.1.0/genes.gtf"
+
 #### star index 
 starmm10index="$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Sequence/starIndex"
 starmm10gtf="$SHARED_DATABASES/Mus_musculus/UCSC/mm10/Annotation/Genes/genes.gtf"

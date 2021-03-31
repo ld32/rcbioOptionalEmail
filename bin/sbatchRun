@@ -60,23 +60,37 @@ else
 fi
 
 #echo checking file: $wp/$flag.success  >&2
-#touch $wp/$flag.success
 
-if [ -f $wp/$flag.success ] && [[ "$te"  != test ]]; then
-    read -p "$flag was done before, do you want to re-run for $sample (y/enter)?:" x </dev/tty
-	if [[ "$x" == "y" ]]; then
-        rm $wp/$flag.success 2>/dev/null  
+if [ -f $wp/$flag.success ]; then 
+    if [ -f $wp/skipAllSuccessJobs.txt ]; then 
+        exit    
+    elif [[ "$te"  != test ]] && [ ! -f $wp/reRunAllSuccessJobs.txt ]; then
+	    echo $flag was done before, do you want to re-run it? >&2
+        echo -e "\033[33;5;7my:     To re-run this job, press y, then enter key.\033[0m" >&2
+        echo -e "\033[33;5;7myall:  To re-run all jobs, type yall, then press enter key.\033[0m" >&2
+        echo -e "\033[33;5;7menter: To not re-run this job, directly press enter key.\033[0m" >&2
+        echo -e "\033[33;5;7mnall:  To not re-run all successful jobs, type nall, then press enter key.\033[0m" >&2
+        read -p "" x </dev/tty
+
+        if [[ "$x" == "y" ]]; then
+            rm $wp/$flag.success 2>/dev/null  
         
-        # remove downstream jobs' .success flag
-        findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2 
-        #echo command is: findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2
-        echo Will re-run the down stream steps even if they are done before. >&2 
-    else
-        exit; 
-    fi  
-fi
+            # remove downstream jobs' .success flag
+            findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2 
+            #echo command is: findDownStreamJobs.sh $wp $flag removeSuccessFlag >&2
+            echo Will re-run the down stream steps even if they are done before. >&2 
+        elif [[ "$x" == "yall" ]]; then 
+            touch $wp/reRunAllSuccessJobs.txt
+        elif [[ "$x" == "nall" ]]; then
+            touch $wp/skipAllSuccessJobs.txt
+            exit
+        else
+            exit 
+        fi  
+    fi
+fi 
  
-rm -f $wp/$flag.start $wp/$flag.failed $wp/$flag.killed  2>/dev/null 
+rm -f $wp/$flag.start $wp/$flag.failed $wp/$flag.killed $wp/$flag.success  2>/dev/null 
 
 echo -e "#!/bin/bash\n#Commands:\ntouch $wp/$flag.start\n$cm\nsleep 5\necho Job done. Summary:\nsacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%20,Timelimit,CPUTime,MaxRSS,NodeList%30 --units=M -j \$SLURM_JOBID\nsendJobFinishEmail.sh  $wp/$flag\n[ ! -f $wp/$flag.success ] && exit 1 || exit 0" > $wp/$flag.sh
 
@@ -86,7 +100,7 @@ echo -e "#!/bin/bash\n#Commands:\ntouch $wp/$flag.start\n$cm\nsleep 5\necho Job 
 #dep="-Ep \"${0%/*}/findDownStreamJobs.sh $wp $flag \""; 
 
 #cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
-cmd="$xsub --mail-type=FAIL --nodes=1 $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
+cmd="$xsub --requeue --mail-type=FAIL --nodes=1 $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
 
 echo -e "\n#sbatch command:\n#$cmd" >> $wp/$flag.sh
 
