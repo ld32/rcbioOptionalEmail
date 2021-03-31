@@ -1,0 +1,18 @@
+slurmstepd: error: Unable to create TMPDIR []: No such file or directory
+slurmstepd: error: Setting TMPDIR to /tmp
+grep: universityA.txt: No such file or directory
+grep: universityA.txt: No such file or directory
+grep: universityA.txt: No such file or directory
+grep: universityA.txt: No such file or directory
+grep: universityB.txt: No such file or directory
+grep: universityB.txt: No such file or directory
+grep: universityB.txt: No such file or directory
+grep: universityB.txt: No such file or directory
+Job done. Summary:
+       JobID              Submit               Start                 End      State  Partition              ReqTRES  Timelimit    CPUTime     MaxRSS                       NodeList 
+------------ ------------------- ------------------- ------------------- ---------- ---------- -------------------- ---------- ---------- ---------- ------------------------------ 
+43976        2021-03-31T15:51:04 2021-03-31T15:51:04             Unknown    RUNNING      short billing=1,cpu=1,mem+   00:10:00   00:00:07                             compute-dev06 
+43976.batch  2021-03-31T15:51:04 2021-03-31T15:51:04             Unknown    RUNNING                                              00:00:07                             compute-dev06 
+43976.extern 2021-03-31T15:51:04 2021-03-31T15:51:04             Unknown    RUNNING                                              00:00:07                             compute-dev06 
+43976.0      2021-03-31T15:51:06 2021-03-31T15:51:06 2021-03-31T15:51:06  COMPLETED                                              00:00:00          0                  compute-dev06 
+*Notice the sacct report above: while the main job is still running for sacct command, user task is completed.
