@@ -45,7 +45,9 @@ cmd="$1"
 
 cmd="{ set -e; $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
 
-echo "${space}flag=Job_"${1// /_}"" >> $run
+echo "${space}flag=Job_"${1// /-}"" >> $run
+
+echo "${space}flag="\${flag//\//_}"" >> $run
 
 echo "${space}id=\$(sbatchRun \$xsubd -flag null \$cwd \$flag \"srun -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run
        
