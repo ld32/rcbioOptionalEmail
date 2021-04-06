@@ -111,12 +111,12 @@ for group in `ls -v -d group*`; do
             [[ $r2 == *gz ]] && unzipcmd1="zcat $r2  > $out/unzip/r2.fq; r1=$out/unzip/r1.fq;"  
             [[ $r2 == *bz2 ]] && unzipcmd1="bzcat $r2  > $out/unzip/r2.fq; r2=$out/unzip/r2.fq;"
            
-            #@1,0,skewer,,sbatch -p short -t 2:0:0 -n 4 --mem 20G
+            #@1,0,skewer,,sbatch -p short -t 2:0:0 -c 4 --mem 20G
             mkdir -p $out/unzip; $unzipcmd $unzipcmd1 skewer -t 4 -x $a -m $mode $r1 $r2 -o $out/SKEWER
             
             out=fastqc/$group.$sample.$readgroup; 
             
-            #@2,0,fastqc,,sbatch -p short -t 2:0:0 -n 1 --mem 8G
+            #@2,0,fastqc,,sbatch -p short -t 2:0:0 -c 1 --mem 8G
             mkdir -p $out; fastqc -o $out $r1 $r2  
             
             [ -z $r2 ] && r1="$pwdhere/skewer/$group.$sample.$readgroup/SKEWER-trimmed.fastq" || { r1="$pwdhere/skewer/$group.$sample.$readgroup/SKEWER-trimmed-pair1.fastq";  r2="$pwdhere/skewer/$group.$sample.$readgroup/SKEWER-trimmed-pair2.fastq";}
@@ -130,7 +130,7 @@ for group in `ls -v -d group*`; do
             mkdir -p starOut/$group$sample$readgroup-star.p2
             
             # first pass 
-            #@3,1,star,index.gtf,sbatch -p short -n 4 -t 0-8:0 --mem 40G 
+            #@3,1,star,index.gtf,sbatch -p short -c 4 -t 0-8:0 --mem 40G 
             rm -r $pwdhere/starOut/$group$sample$readgroup-star.p1/* $pwdhere/starOut/$group$sample$readgroup-star.ref/* $pwdhere/starOut/$group$sample$readgroup-star.p2/*; cd $pwdhere/starOut/$group$sample$readgroup-star.p1 && STAR --genomeDir $index --readFilesIn $r1 $r2 --runThreadN 4 $zipcmd  && cd $pwdhere/starOut/$group$sample$readgroup-star.ref && STAR --runMode genomeGenerate --genomeDir ./ --genomeFastaFiles $fa --sjdbFileChrStartEnd $pwdhere/starOut/$group$sample$readgroup-star.p1/SJ.out.tab --sjdbOverhang $(($l - 1)) --runThreadN 4  &&  cd $pwdhere/starOut/$group$sample$readgroup-star.p2 && STAR --genomeDir $pwdhere/starOut/$group$sample$readgroup-star.ref --readFilesIn $r1 $r2 --runThreadN 4  $zipcmd --outSAMstrandField intronMotif    
             
             # # the awk command is to correct a issue: https://groups.google.com/forum/#!topic/rna-star/Ta1Z2u4bPfc
@@ -151,7 +151,7 @@ for group in `ls -v -d group*`; do
         cd $pwdhere           
         mkdir starOut/$group$sample
         
-        #@4,3,merge,,sbatch -p short -n 1 -t 0-4:0 --mem 10G  
+        #@4,3,merge,,sbatch -p short -c 1 -t 0-4:0 --mem 10G  
         java -Xmx12g -jar $PICARD/picard-2.8.0.jar MergeSamFiles VALIDATION_STRINGENCY=SILENT OUTPUT=starOut/$group$sample/accepted_hits.bam  $inputsams SORT_ORDER=coordinate && samtools index starOut/$group$sample/accepted_hits.bam
         
         #break

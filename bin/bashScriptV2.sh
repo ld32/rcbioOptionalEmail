@@ -4,10 +4,10 @@ for i in A B; do
     
     u=university$i.txt    
     
-    #@1,0,find1,u,sbatch -p short -n 1 -t 50:0   
+    #@1,0,find1,u,sbatch -p short -c 1 -t 50:0   
     grep -H John $u >>  John.txt; grep -H Mike $u >>  Mike.txt        
   
-    #@2,0,find2,u,sbatch -p short -n 1 -t 50:0
+    #@2,0,find2,u,sbatch -p short -c 1 -t 50:0
     grep -H Nick $u >>  Nick.txt; grep -H Julia $u >>  Julia.txt
 
 done 

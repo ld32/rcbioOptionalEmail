@@ -78,7 +78,7 @@ for group in `ls -v -d group*/|sed 's|[/]||g'`; do
             echo working on readgroup: $readgroup
             [[ -f $r2 ]] || { echo -e "\n!!!Error: read2 file '$r2' not exist, ignore this warning if you are working with single-end data\n\n"; r2=""; exit 1; }
 
-            #@1,0,bwa,index,sbatch -n 4 -p short -t 3:0:0 --mem 40G 
+            #@1,0,bwa,index,sbatch -c 4 -p short -t 3:0:0 --mem 40G 
             bwa mem -M -t 4 $index $r1 $r2 > $pwdhere/bwaOut/$group$sample/$readgroup.sam
 
             inputsams="$inputsams INPUT=$pwdhere/bwaOut/$group$sample/$readgroup.sam"

@@ -101,7 +101,7 @@ for group in `ls -v -d group*/|sed 's|[/]||g'`; do
         
         [ -z "$l" ] ||  reads="--single $reads -l $l -s $s"
         
-        #@1,0,kallisto2,,sbatch -p short --mem 32G -n 4 -t 2:0:0 
+        #@1,0,kallisto2,,sbatch -p short --mem 32G -c 4 -t 2:0:0 
         rm -r kallistoOut/$group$sample 2>/dev/null ; kallisto quant -o kallistoOut/$group$sample -b 100 -t 4 -i $index $reads
           
     done     
