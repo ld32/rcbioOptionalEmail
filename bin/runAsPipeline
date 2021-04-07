@@ -182,7 +182,7 @@ for t in `cat ${1%% *}`; do
         cmd=${cmd//\"/\\\\\"}
 
         # escape awk variables
-        cmd=${cmd//\$/\\$}
+        cmd=${cmd//\$/\\$} 
 
         # replace space with ., if the job depends on something
         echo "${space}[ -z \"\${deps// /}\" ] && deps=null || deps=\${deps// /.}" >> $run
