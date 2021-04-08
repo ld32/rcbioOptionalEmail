@@ -80,7 +80,7 @@ for group in `ls -v -d group*/|sed 's|[/]||g'`; do
             read1="$read1,$group/$sample/$r1"; [ -z $r2 ] || read2="$read2,$r2"
         done
         
-        #@1,0,bowtie2,index,sbatch -n 4 -p short -t 12:0:0 --mem 40G 
+        #@1,0,bowtie2,index,sbatch -c 4 -p short -t 12:0:0 --mem 40G 
         rm -r bowtieOut/$group$sample 2>/dev/null ; mkdir -p bowtieOut/$group$sample;  bowtie2 -p 4 -x $index -1 ${read1#,} -2 ${read2#,} | samtools view -bS - > bowtieOut/$group$sample/accepted_hits.bam && samtools sort bowtieOut/$group$sample/accepted_hits.bam bowtieOut/$group$sample/accepted_hits_sorted &&  samtools index bowtieOut/$group$sample/accepted_hits_sorted.bam
 
     done 

@@ -65,7 +65,7 @@ for group in `ls -v -d group*`; do
         
         [ -z $reads2 ] || reads1="--paired-end $reads1"
                  
-        #@1,0,expression,index,sbatch -n 4 -p short -t 8:0:0 --mem 32G 
+        #@1,0,expression,index,sbatch -c 4 -p short -t 8:0:0 --mem 32G 
         rsem-calculate-expression -p 4 -q  --bowtie2 --estimate-rspd --output-genome-bam  ${reads1%,} ${reads2%,} $index out/$group.$sample && mkdir -p /tmp/$USER/$group/$sample && samtools sort -@ 4 -m 1G out/$group.$sample.transcript.bam -T /tmp/$USER/$group/$sample -o out/$group.$sample.transcript.sorted.bam && samtools index out/$group.$sample.transcript.sorted.bam && samtools sort -@ 4 -m 1G out/$group.$sample.genome.bam -T /tmp/$USER/$group/$sample -o out/$group.$sample.genome.sorted.bam && samtools index out/$group.$sample.genome.sorted.bam
  
         

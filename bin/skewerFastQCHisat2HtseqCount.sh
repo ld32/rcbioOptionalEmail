@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "\nUsage : $0 <-r species_index -a <adapter.fa> (required. Such as: dm6, GRCz10, mm10 or hg19. Let us know if you need other references)> <-s strand(yes,no,reverse)>"; exit 1;} 
+usage() { echo -e "\nUsage : $0 <-r species_index -a <adapter.fa> (required. Such as: dm6, GRCz10, GRCz11, mm10 or hg19. Let us know if you need other references)> <-s strand(yes,no,reverse)>"; exit 1;} 
 
 while getopts ":a:r:s:" o; do
     case "${o}" in
@@ -10,7 +10,8 @@ while getopts ":a:r:s:" o; do
         a)
             a=${OPTARG}
             ;;    
-        s)  s=${OPTARG 
+        s)  
+            s=${OPTARG} 
             ;;   
         *)
             usage
@@ -49,8 +50,13 @@ case "$r" in
             splice="--known-splicesite-infile $hisat2GRCz10Splice"
             gtf="$hisat2GRCz10GTF"
     ;;
+   
+    "GRCz11") index="$hisat2GRCz11Index"
+            splice="--known-splicesite-infile $hisat2GRCz11Splice"
+            gtf="$hisat2GRCz11GTF"
+    ;; 
     
-    *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; usage
+   *)  echo "Index '$r' is not supported. Please email rchelp@hms.harvard.edu for help."; usage
     ;;
 esac
  
@@ -79,14 +85,14 @@ for group in `ls -v -d group*/|sed 's|[/]||g'`; do
             out=skewer/$group.$sample.$readgroup
             r1=$group/$sample/$r1
            
-            #@1,0,skewer,,sbatch -p short -t 2:0:0 -n 4 --mem 20G
+            #@1,0,skewer,,sbatch -p short -t 2:0:0 -c 4 --mem 20G
             mkdir -p $out; skewer -t 4 -x $a -m pe $r1 $r2 -o $out/SKEWER
             
             read1="$read1,$pwd/$out/SKEWER-trimmed-pair1.fastq"; [ -z $r2 ] || read2="$read2,$pwd/$out/SKEWER-trimmed-pair2.fastq"
             
             out=fastqc/$group.$sample.$readgroup; 
             
-            #@2,0,fastqc,,sbatch -p short -t 2:0:0 -n 1 --mem 8G
+            #@2,0,fastqc,,sbatch -p short -t 2:0:0 -c 1 --mem 8G
             mkdir -p $out; fastqc -o $out $r1 $r2  
         done
         
@@ -96,7 +102,7 @@ for group in `ls -v -d group*/|sed 's|[/]||g'`; do
         
         out=hisat/$group.$sample; mkdir -p $out htseq 
         
-        #@3,1,hisatCount,,sbatch -n 4 -p short -t 12:0:0 --mem 40G
+        #@3,1,hisatCount,,sbatch -c 4 -p short -t 12:0:0 --mem 40G
         cd $out; rm aligns.sorted.bam.tmp* 2>/dev/null; hisat2 $index $reads --phred33 --mm -p 4 --dta  $splice | samtools view -Suh -f 1 - |  samtools sort - -n -o aligns.sorted.bam && htseq-count -s $s -f bam aligns.sorted.bam $gtf > $pwd/htseq/$group.$sample.read.count.txt; cd -
                  
 

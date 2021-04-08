@@ -1,6 +1,6 @@
 #!/bin/sh
 
-usage() { echo -e "Usage: \n${0##*/} <bashScriptV2.sh [parameter1] [parameter2] ...> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -n 4\" . Notice: it should be double quoted.> <useTmp/noTmp> [run, default is empty to test the pipeline, which does not submit jobs, only create fake job id, 123.]"; exit 1; } 
+usage() { echo -e "Usage: \n${0##*/} <bashScriptV2.sh [parameter1] [parameter2] ...> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -c 4\" . Notice: it should be double quoted.> <useTmp/noTmp> [run, default is empty to test the pipeline, which does not submit jobs, only create fake job id, 123.]"; exit 1; } 
 
 [ -e ${1%% *} ] || { echo bash script file not exist: ${1%% *} Exiting...; usage; }
 
@@ -48,7 +48,7 @@ echo mkdir -p flag >> $run
 
 echo "if [ -f flag/alljobs.jid ]; then" >> $run
 
-echo "    checkJobsSlurm  flag/alljobs.jid " >> $run
+echo "    cancelAllJobs flag/alljobs.jid " >> $run
 
 echo "    [ \$? == 1 ] && exit 0;" >> $run
 
@@ -59,6 +59,8 @@ echo "cwd=\`realpath ./flag\`" >> $run
 #echo "rm flag/*.failed flag/*.killed 2>/dev/null" >> $run
 
 echo "[ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old"  >> $run 
+
+echo "rm flag/skipAllSuccessJobs.txt flag/reRunAllSuccessJobs.txt 2>/dev/null" >> $run
 
 echo "printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid" >> $run 
 echo "echo ---------------------------------------------------------" >> $run
@@ -126,7 +128,7 @@ for t in `cat ${1%% *}`; do
           continue
         fi
         space="$oldspace"
-        cmd="$cmd ${i%\\#*}" # remove comments
+        cmd="$cmd ${i%%#*}" # remove comments
         cmd="${cmd# }"       # remove leading space
         
         #echo cmd1:$cmd
@@ -175,7 +177,6 @@ for t in `cat ${1%% *}`; do
                 [ -z $sameloop ] && echo "${space}deps=\"\${jobID[$de]}\""  >> $run || echo "${space}deps=\"\${jobIDs[$de]}\""  >> $run 
             fi
         fi 
-        
                 
         # escape double quota. bsub does not need this? not sure
         cmd=${cmd//\"/\\\\\"}
@@ -186,7 +187,7 @@ for t in `cat ${1%% *}`; do
         #echo "echo command is: bsubRun \$xsub -flag \$deps \$cwd \$flag \"$cmd\" " >> $run
         [[ "$3" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPath $ref" >> $run && cmd="rsyncToTmp ${ref//./ $}; $cmd"
 
-        cmd="{ $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
+        cmd="{ set -e; $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
         
         # echo exit >> $run   # only test for one job
         [[ "$4" == run ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run || echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\" test)"   >> $run

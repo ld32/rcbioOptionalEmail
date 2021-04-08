@@ -34,11 +34,13 @@ if [ ! -z "${ids/ /}" ]; then
     if [[ "$x" == "y" ]]; then
         for id in $ids; do #`echo -e "$ids" | cut -d' ' -f1`; do
           scancel $id
-          echo touching flag/${nmap[$id]}.killed
+          echo ${nmap[$id]} cancelled.
           touch flag/${nmap[$id]}.user.killed
         done
     else
         exit 1;
     fi
+else 
+    echo Could not find any jobs to cancel.
 fi
 exit 0;
