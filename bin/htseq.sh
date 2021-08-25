@@ -25,7 +25,7 @@ done
 [ -d group2 ] || { echo group2 is not found. You need at least two groups to run this pipeline; exit 1; }
 
 # rename flag folder from earlier bowtie/star/bwa alignment run 
-[ -f flag/alljobs.jid.first ] && { grep 2.1.mergeHTSeq flag/alljobs.jid.first >/dev/null || { mv -f flag flagEarlierRun; mkdir flag; } ; } 
+#[ -f flag/alljobs.jid.first ] && { grep 2.1.mergeHTSeq flag/alljobs.jid.first >/dev/null || { mv -f flag flagEarlierRun; mkdir flag; } ; } 
 
 [ -z "$p" ] && { echo Please provide the alignment folder for option -p such as -p bwaOut, -p bowtieOut or -p starOut;  usage; }
 

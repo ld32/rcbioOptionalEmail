@@ -59,6 +59,6 @@ echo "${space}    printf \"%-10s  %-20s  %-10s\n\" \$id null \$flag >> \$cwd/all
 echo "${space}    echo " >> $run
 echo "${space}fi" >> $run 
 
-[ ! -f flag/alljobs.jid.first ] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
+#[ ! -f flag/alljobs.jid.first ] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
 
 eval /bin/bash $run "${1#* }"
