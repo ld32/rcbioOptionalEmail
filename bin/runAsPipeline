@@ -248,7 +248,7 @@ echo "cat flag/alljobs.jid" >> $run
 echo "echo ---------------------------------------------------------" >> $run
 [[ "$4" == run ]] || echo "echo Note: This is just a test run, so no job is actually submitted. In real run it should submit jobs and report as above." >> $run
 
-[[ "$4" == run ]] && [ ! -f flag/alljobs.jid.first ] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
+#[[ "$4" == run ]] && [ ! -f flag/alljobs.jid.first ] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
 
 echo $run ${1#* } is ready to run. Starting to run ...
 
