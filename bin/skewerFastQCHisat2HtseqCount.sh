@@ -23,7 +23,7 @@ done
 [ -f $a ] || { echo Adapter sequence file is missing or does not exist $a; usage; }
 [ -z "$s" ] && { echo Please provide the strand for option -s;  usage; }
 
-module purge 
+#module purge 
 module load gcc/6.2.0 skewer/0.2.2 fastqc/0.11.5 hisat2/2.1.0 samtools/1.3.1   python/2.7.12 htseq/0.9.1 R/3.4.1 
 echo Current loaded modules: `module list`
 
