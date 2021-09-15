@@ -116,7 +116,7 @@ cmd="$xsub --requeue --nodes=1 $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out 
 echo -e "\n#sbatch command:\n#$cmd" >> $wp/$flag.sh
 
 if [[ "$te"  == test ]]; then 
-    output="This is testing, so no job is submitted. In real run it should submit job such as: Submitted batch job $(date +"%N")"   
+    output="This is testing, so no job is submitted. In real run it should submit job such as: Submitted batch job $(date +"%4N")"   
 else 
     [[ "$deps" != *&&* ]] && output="$($cmd)" || output="$(eval $cmd)"
 fi 
