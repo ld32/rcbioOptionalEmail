@@ -49,7 +49,7 @@ echo "${space}flag=Job_"${1// /-}"" >> $run
 
 echo "${space}flag="\${flag//\//_}"" >> $run
 
-echo "${space}id=\$(sbatchRun \$xsubd -flag null \$cwd \$flag \"srun -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run
+echo "${space}id=\$(sbatchRun \$xsubd -flag null \$cwd \$flag \"srun -A xyz -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run
        
 echo "printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid" >> $run        
 echo "${space}if [ -z \"\$id\" ]; then"  >> $run
