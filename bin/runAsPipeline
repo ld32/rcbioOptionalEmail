@@ -190,7 +190,7 @@ for t in `cat ${1%% *}`; do
         cmd="{ set -e; $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
         
         # echo exit >> $run   # only test for one job
-        [[ "$4" == run ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run || echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -n 1 bash -c \\\"$cmd\\\"\" test)"   >> $run
+        [[ "$4" == run ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -A xyz -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run || echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -A xyz -n 1 bash -c \\\"$cmd\\\"\" test)"   >> $run
        
         [[ "$3" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPathBack $ref" >> $run 
         #echo "echo id is: \$id ">> $run
