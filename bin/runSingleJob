@@ -2,10 +2,7 @@
 
 usage() { echo -e "Usage: \n${0##*/} <bashScript.sh [parameter1] [parameter2] ...> <sbatch options, such as: \"sbatch -p medium -t 24:0:0 -c 4\" . Notice: it should be double quoted.> [run, default is empty to test the pipeline, which does not submit jobs, only create fake job id, 123.]"; exit 1; } 
 
-#[ -e ${1%% *} ] || { echo bash script file not exist: ${1%% *} Exiting...; usage; }
-
 [[ "$2" != sbatch* ]] && usage
-
 
 stamp=$(date -d "today" +"%Y%m%d%H%M")
 
@@ -20,8 +17,6 @@ run=flag/slurmPipeLine.$stamp.run.sh
 echo "#!/bin/sh" > $run  
 
 echo "echo Running \$0 \$@"  >> $run   
-
-echo echo module list: >> $run 
 
 echo module list >> $run 
      
@@ -41,6 +36,20 @@ echo "cwd=\`realpath ./flag\`" >> $run
 
 echo "[ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old"  >> $run 
 
+# get slurm account from command line
+slurmAccount=""
+if [[ "$2" == *\ -A\ * ]]; then 
+    slurmAccount=${2#*-A }
+    slurmAccount=${slurmAccount%% *}
+elif [[ "$2" == *\ --account\ * ]]; then  
+    slurmAccount=${2#*--account }
+    slurmAccount=${slurmAccount%% *}
+elif [[ "$2" == *\ --account=* ]]; then  
+    slurmAccount=${2#*--account\=}
+    slurmAccount=${slurmAccount%% *}
+fi  
+[ -z "$slurmAccount" ] && { echo Missing slurm account: $2; exit 1; }
+
 cmd="$1"
 
 cmd="{ set -e; $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
@@ -49,7 +58,7 @@ echo "${space}flag=Job_"${1// /-}"" >> $run
 
 echo "${space}flag="\${flag//\//_}"" >> $run
 
-echo "${space}id=\$(sbatchRun \$xsubd -flag null \$cwd \$flag \"srun -A xyz -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run
+echo "${space}id=\$(sbatchRun \$xsubd -flag null \$cwd \$flag \"srun -A $slurmAccount -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run
        
 echo "printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid" >> $run        
 echo "${space}if [ -z \"\$id\" ]; then"  >> $run
@@ -58,7 +67,5 @@ echo "${space}else"  >> $run
 echo "${space}    printf \"%-10s  %-20s  %-10s\n\" \$id null \$flag >> \$cwd/alljobs.jid"  >> $run
 echo "${space}    echo " >> $run
 echo "${space}fi" >> $run 
-
-#[ ! -f flag/alljobs.jid.first ] && echo "cp flag/alljobs.jid flag/alljobs.jid.first" >> $run 
 
 eval /bin/bash $run "${1#* }"
