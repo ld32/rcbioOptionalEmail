@@ -94,7 +94,16 @@ fi
  
 rm -f $wp/$flag.start $wp/$flag.failed $wp/$flag.killed $wp/$flag.success  2>/dev/null 
 
-echo -e "#!/bin/bash\n#Commands:\ntouch $wp/$flag.start\n$cm\nsleep 5\necho Job done. Summary:\nsacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%20,Timelimit,CPUTime,MaxRSS,NodeList%30 --units=M -j \$SLURM_JOBID\nsendJobFinishEmail.sh  $wp/$flag\n[ ! -f $wp/$flag.success ] && exit 1 || exit 0" > $wp/$flag.sh
+#echo -e "#!/bin/bash\n#Commands:\ntouch $wp/$flag.start\n$cm\nsleep 5\necho Job done. Summary:\nsacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%20,Timelimit,CPUTime,MaxRSS,NodeList%30 --units=M -j \$SLURM_JOBID\nsendJobFinishEmail.sh  $wp/$flag\n[ ! -f $wp/$flag.success ] && exit 1 || exit 0" > $wp/$flag.sh
+echo -e "#!/bin/bash\n#Commands:\ntrap \"{ 
+    sleep 5;
+    echo Job done. Summary:;
+    sacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%20,Timelimit,CPUTime,MaxRSS,NodeList%30 --units=M -j \$SLURM_JOBID;
+    sendJobFinishEmail.sh  $wp/$flag;
+    [ ! -f $wp/$flag.success ] && exit 1 || exit 0
+}\" EXIT
+touch $wp/$flag.start
+$cm" > $wp/$flag.sh
 
 # if this job fails, kill all the jobs which depends on this one
 # remove the line if you don't need to kill jobs automatically
@@ -102,12 +111,12 @@ echo -e "#!/bin/bash\n#Commands:\ntouch $wp/$flag.start\n$cm\nsleep 5\necho Job 
 #dep="-Ep \"${0%/*}/findDownStreamJobs.sh $wp $flag \""; 
 
 #cmd="$b  --kill-on-invalid-dep=yes --nodes=1  $dep --mem-per-cpu=10G $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
-cmd="$xsub --requeue --mail-type=FAIL --nodes=1 $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
+cmd="$xsub --requeue --nodes=1 $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
 
 echo -e "\n#sbatch command:\n#$cmd" >> $wp/$flag.sh
 
 if [[ "$te"  == test ]]; then 
-    output="This is testing, so no job is submitted. In real run it should submit job such as: Submitted batch job 123"  
+    output="This is testing, so no job is submitted. In real run it should submit job such as: Submitted batch job $(date +"%4N")"   
 else 
     [[ "$deps" != *&&* ]] && output="$($cmd)" || output="$(eval $cmd)"
 fi 
