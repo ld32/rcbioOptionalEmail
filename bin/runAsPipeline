@@ -16,11 +16,7 @@ echo Running: $0 $@
 
 module list 
 
-stamp=$(date -d "today" +"%Y%m%d%H%M")
-
-[ -d flag ] && [[ "$4" == run ]] && cp -rp flag flag.$stamp 
-
-[ -f output.log ] && [[ "$4" == run ]] && cp output.log output.$stamp.log 
+[ -d flag ] && [[ "$4" == run ]] && cp -rp flag flag.$(stat -c %y flag | tr " " ".") 
 
 mkdir -p flag
 
