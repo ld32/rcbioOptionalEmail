@@ -73,16 +73,16 @@ echo "echo ---------------------------------------------------------" >> $run
 slurmAccount=""
 if [[ "$2" == *\ -A\ * ]]; then 
     slurmAccount=${2#*-A }
-    slurmAccount=${slurmAccount%% *}
+    slurmAccount="-A ${slurmAccount%% *}"
 elif [[ "$2" == *\ --account\ * ]]; then  
     slurmAccount=${2#*--account }
-    slurmAccount=${slurmAccount%% *}
+    slurmAccount="-A ${slurmAccount%% *}"
 elif [[ "$2" == *\ --account=* ]]; then  
     slurmAccount=${2#*--account\=}
-    slurmAccount=${slurmAccount%% *}
+    slurmAccount="-A ${slurmAccount%% *}"
 fi  
-[ -z "$slurmAccount" ] && { echo Missing slurm account: $2; exit 1; }
 
+[ -z "$slurmAccount" ] && [ `sshare $USER | wc -l` -ge "4" ] && { echo Missing slurm account: $2; exit 1; } 
 
 IFS=$'\n'
 for t in `cat ${1%% *}`; do 
@@ -120,7 +120,7 @@ for t in `cat ${1%% *}`; do
         ref=${arrIN[3]%%:*} # references files which need to rsync to tmp space
 	    xsuba=${arrIN[4]}  # sbatch options
 	    
-	    [ ! -z "$xsuba" ] && { echo "${space}xsub=\"$xsuba -A $slurmAccount\"" >> $run; echo sbatch options: $xsuba; } || echo "${space}xsub=\"\$xsubd\"" >> $run 
+	    [ ! -z "$xsuba" ] && { echo "${space}xsub=\"$xsuba $slurmAccount\"" >> $run; echo sbatch options: $xsuba; } || echo "${space}xsub=\"\$xsubd\"" >> $run 
 	    
 	    [ -z "$ref" ] || ref=.$ref
         
@@ -206,7 +206,7 @@ for t in `cat ${1%% *}`; do
         cmd="{ set -e; $cmd; } && touch \$cwd/\$flag.success || touch \$cwd/\$flag.failed"      
         
         # echo exit >> $run   # only test for one job
-        [[ "$4" == run ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -A $slurmAccount -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run || echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun -A $slurmAccount -n 1 bash -c \\\"$cmd\\\"\" test)"   >> $run
+        [[ "$4" == run ]] && echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun $slurmAccount -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run || echo "${space}id=\$(sbatchRun \$xsub -flag \$deps \$cwd \$flag \"srun $slurmAccount -n 1 bash -c \\\"$cmd\\\"\" test)"   >> $run
        
         [[ "$3" == "useTmp" && ! -z "$ref" ]] && echo "${space}setPathBack $ref" >> $run 
         #echo "echo id is: \$id ">> $run
