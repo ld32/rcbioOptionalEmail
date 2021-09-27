@@ -40,15 +40,16 @@ echo "[ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old"  >> $
 slurmAccount=""
 if [[ "$2" == *\ -A\ * ]]; then 
     slurmAccount=${2#*-A }
-    slurmAccount=${slurmAccount%% *}
+    slurmAccount="-A ${slurmAccount%% *}"
 elif [[ "$2" == *\ --account\ * ]]; then  
     slurmAccount=${2#*--account }
-    slurmAccount=${slurmAccount%% *}
+    slurmAccount="-A ${slurmAccount%% *}"
 elif [[ "$2" == *\ --account=* ]]; then  
     slurmAccount=${2#*--account\=}
-    slurmAccount=${slurmAccount%% *}
+    slurmAccount="-A ${slurmAccount%% *}"
 fi  
-[ -z "$slurmAccount" ] && { echo Missing slurm account: $2; exit 1; }
+
+[ -z "$slurmAccount" ] && [ `sshare -Uu $USER | wc -l` -ge "4" ] && { echo Missing slurm account: $2; exit 1; }
 
 cmd="$1"
 
@@ -58,7 +59,7 @@ echo "${space}flag=Job_"${1// /-}"" >> $run
 
 echo "${space}flag="\${flag//\//_}"" >> $run
 
-echo "${space}id=\$(sbatchRun \$xsubd -flag null \$cwd \$flag \"srun -A $slurmAccount -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run
+echo "${space}id=\$(sbatchRun \$xsubd -flag null \$cwd \$flag \"srun $slurmAccount -n 1 bash -e -c \\\"$cmd\\\"\")"   >> $run
        
 echo "printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid" >> $run        
 echo "${space}if [ -z \"\$id\" ]; then"  >> $run

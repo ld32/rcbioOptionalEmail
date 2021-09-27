@@ -64,7 +64,7 @@ fi
 #echo deps is .$deps. >&2
 
 if [ -f $wp/$flag.success ]; then 
-    if [ -f $wp/skipAllSuccessJobs.txt ]; then 
+    if [ -f $wp/skipAllSuccessJobs.txt ] && [ -z "$deps" ]; then 
         exit    
     elif [[ "$te"  != test ]] && [ ! -f $wp/reRunAllSuccessJobs.txt ] && [ -z "$deps" ]; then
         echo $flag was done before, do you want to re-run it? >&2
