@@ -82,7 +82,7 @@ elif [[ "$2" == *\ --account=* ]]; then
     slurmAccount="-A ${slurmAccount%% *}"
 fi  
 
-[ -z "$slurmAccount" ] && [ `/usr/bin/sshare -Uu $USER | wc -l` -ge "4" ] && { echo Missing slurm account: $2; exit 1; } 
+[ -z "$slurmAccount" ] && [ `sshare -Uu $USER | wc -l` -ge "4" ] && { echo Missing slurm account: $2; exit 1; } 
 
 IFS=$'\n'
 for t in `cat ${1%% *}`; do 
