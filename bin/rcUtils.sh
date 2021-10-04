@@ -5,7 +5,7 @@ rsyncToTmp() {
   for v in $@; do
       echo Working to copy: $v, waiting lock...
       [[ $v == /tmp/rcbio/* ]] || continue
-      ls ${v#/tmp/rcbio/}* >/dev/null 2>&1 || { echo Reference file or folder not exist: ${v#/tmp/rcbio}; continue; } 
+      ls ${v#/tmp/rcbio/}* >/dev/null 2>&1 || { echo Reference file or folder not exist: ${v#/tmp/rcbio/}; exit 1; } 
       lockFile=/tmp/${v//\//-}
       
       while ! ( set -o noclobber; echo "$$" > "$lockFile") 2> /dev/null; do
