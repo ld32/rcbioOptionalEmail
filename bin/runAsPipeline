@@ -62,7 +62,7 @@ echo "cwd=\`realpath ./flag\`" >> $run
 
 echo "[ -f flag/alljobs.jid ] && mv flag/alljobs.jid flag/alljobs.jid.old"  >> $run 
 
-echo "rm flag/skipAllSuccessJobs.txt flag/reRunAllSuccessJobs.txt 2>/dev/null" >> $run
+echo "rm flag/skipAllSuccessJobs*.txt flag/reRunAllSuccessJobs*.txt 2>/dev/null" >> $run
 
 echo "printf \"%-10s   %-20s   %-10s\n\" job_id depend_on job_flag > flag/alljobs.jid" >> $run 
 echo "echo ---------------------------------------------------------" >> $run
