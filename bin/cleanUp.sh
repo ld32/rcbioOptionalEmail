@@ -1,5 +1,5 @@
 #!/bin/bash
-                
+
 to=`cat ~/.forward`
 
 flag=$1
@@ -23,3 +23,10 @@ else
 fi
 
 echo -e "$toSend" | sendmail $to 
+
+echo Job done. Summary:;
+
+sacct --format=JobID,Submit,Start,End,State,Partition,ReqTRES%20,Timelimit,CPUTime,MaxRSS,NodeList%30 --units=M -j $SLURM_JOBID;
+
+[ ! -f $flag.success ] && exit 1 || exit 0
+
