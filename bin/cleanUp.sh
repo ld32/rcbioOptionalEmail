@@ -1,7 +1,5 @@
 #!/bin/bash
 
-to=`cat ~/.forward`
-
 flag=$1
 
 minimumsize=9000
@@ -22,7 +20,7 @@ else
    toSend="$s\n$toSend"
 fi
 
-echo -e "$toSend" | sendmail $to 
+echo -e "$toSend" | sendmail $USER 
 
 echo Job done. Summary:;
 
