@@ -98,7 +98,8 @@ fi
  
 rm -f $wp/$flag.start $wp/$flag.failed $wp/$flag.killed $wp/$flag.success  2>/dev/null 
 
-echo -e "#!/bin/bash\n#Commands:\ntrap \"{ cleanUp.sh  $wp/$flag; }\" EXIT \nunset SLURM_MEM_PER_CPU SLURM_MEM_PER_GPU SLURM_MEM_PER_NODE SLURM_CPU_BIND
+echo -e "#!/bin/bash\n#Commands:\ntrap \"{ cleanUp.sh  $wp/$flag; }\" EXIT
+unset SLURM_CPU_BIND
 $cm" > $wp/$flag.sh
 
 cmd="$xsub --requeue --nodes=1 $deps -J $flag -o $wp/$flag.out -e $wp/$flag.out $wp/$flag.sh" 
