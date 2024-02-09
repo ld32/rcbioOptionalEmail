@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#set -x 
+
 flag=$1
 
 minimumsize=9000
@@ -21,7 +23,20 @@ else
 fi
 
 #echo -e "$toSend" | sendmail $USER 
-echo -e "$toSend" | mail -s "$s" $USER
+if [ -f $flag.success ]; then 
+   if [ ! -f ${flag%/*}/lessEmail ]; then
+      echo -e "$toSend" | mail -s "$s" $USER
+
+   else 
+      lastJob=`tail -n 1 ${flag%/*}/alljobs.jid | cut -d' ' -f1`
+   
+      if [[ $SLURM_JOBID == $lastJob ]]; then
+         echo -e "$toSend" | mail -s "$s" $USER
+      fi 
+   fi     
+else 
+   echo -e "$toSend" | mail -s "$s" $USER
+fi
 
 echo Job done. Summary:;
 
